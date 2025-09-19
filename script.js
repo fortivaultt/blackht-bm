@@ -54,7 +54,12 @@ const DICT = {
   }
 };
 
-let currentLang = localStorage.getItem('site_lang') || 'en';
+let currentLang = (function(){
+  const stored = localStorage.getItem('site_lang');
+  if (stored) return stored;
+  const nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+  return nav.toLowerCase().startsWith('de') ? 'de' : 'en';
+})();
 
 function setLangButtons() {
   [langEnBtn, langDeBtn].forEach(b => { if (!b) return; b.setAttribute('aria-pressed', b.dataset.lang === currentLang ? 'true' : 'false'); });
