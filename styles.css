@@ -89,6 +89,11 @@ header.site-header {
 .animated-icon.pulse { animation: pulse 1.4s ease-in-out infinite; }
 .animated-icon.orbit { animation: orbit 1.8s linear infinite; }
 
+/* checklist completed / fade */
+.checklist-item.completed { opacity: 0.95; transform: translateY(0); }
+.checklist-item.fade-away { opacity: 0; height: 0; padding-top: 0; padding-bottom: 0; margin: 0; overflow: hidden; transition: opacity 360ms ease, height 360ms ease, padding 360ms ease, margin 360ms ease; }
+.checklist-item .check-text.status { opacity: 0.9; }
+
 @keyframes pulse { 0% { transform: scale(0.96); opacity: 0.9; } 50% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(0.96); opacity: 0.9; } }
 @keyframes orbit { 0% { transform: translateY(0); } 50% { transform: translateY(-3px) rotate(6deg); } 100% { transform: translateY(0); } }
 
