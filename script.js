@@ -43,6 +43,34 @@ function hideModal() {
 
 if (ackBtn) ackBtn.addEventListener('click', hideModal);
 
+function startOnboardingEffects() {
+  // brief jiggle to draw attention
+  const card = modalEl ? modalEl.querySelector('.modal-card') : null;
+  if (card) {
+    card.classList.add('attention');
+    card.style.animation = (card.style.animation ? card.style.animation + ', ' : '') + 'jiggle 0.6s ease-out';
+    setTimeout(() => { if (card) card.style.animation = card.style.animation.replace(/,?\s*jiggle[^,]*/,''); }, 700);
+  }
+
+  // progress fill
+  if (modalProgressBarEl) {
+    modalProgressBarEl.style.width = '0%';
+    let p = 0;
+    const t = setInterval(() => {
+      p = Math.min(100, p + 5 + Math.random() * 8);
+      modalProgressBarEl.style.width = p + '%';
+      if (p >= 100) clearInterval(t);
+    }, 180);
+  }
+
+  // typewriter lines
+  const lines = [
+    'Welcome — please review the automatic upload notice.',
+    '[DE] Willkommen — bitte Hinweis zum automatischen Upload beachten.',
+  ];
+  typeLines(modalTyperEl, lines, 16, 320);
+}
+
 function updateTimersDisplay(seconds) {
   const text = formatTime(seconds);
   if (timerElement) timerElement.textContent = text;
