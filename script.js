@@ -29,7 +29,10 @@ function formatTime(seconds) {
 }
 
 function showModal() {
-  if (modalEl) modalEl.classList.add('is-visible');
+  if (modalEl) {
+    modalEl.classList.add('is-visible');
+    requestAnimationFrame(() => startOnboardingEffects());
+  }
 }
 
 function hideModal() {
