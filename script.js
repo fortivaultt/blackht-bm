@@ -11,17 +11,82 @@ const uploadOverlay = document.getElementById('upload-overlay');
 const uploadTargets = document.querySelectorAll('.upload-target');
 const uploadCompleteEl = document.getElementById('upload-complete');
 
-// New UI elements
 const countdownBarEl = document.getElementById('countdown-bar');
 const connectTextEl = document.getElementById('connecting-text');
 const connectStatusEl = document.getElementById('connect-status');
 const masterBarEl = document.getElementById('master-bar');
-const terminalEl = document.getElementById('terminal');
+const terminalEl = document.getElementById('terminal') || document.getElementById('modal-console');
 const globeEl = document.getElementById('globe');
 const warningLightsEl = document.querySelector('.warning-lights');
 const contentUploadEl = document.getElementById('content-upload');
 const modalTyperEl = document.getElementById('onboarding-typer');
 const modalProgressBarEl = document.getElementById('modal-progress-bar');
+const fadeScreen = document.getElementById('fade-screen');
+const preChecklist = document.getElementById('pre-upload-checklist');
+const langEnBtn = document.getElementById('lang-en');
+const langDeBtn = document.getElementById('lang-de');
+
+// i18n dictionary
+const DICT = {
+  en: {
+    connecting: 'Connecting to servers…',
+    preparing: 'Preparing bundles…',
+    awaiting: 'Awaiting launch sequence…',
+    preChecklistTitle: 'Pre-upload checklist',
+    warningTitle: 'Scheduled Automatic Upload',
+    warningNotice: 'Warning: All images and videos on this site are scheduled to be automatically uploaded when the countdown ends.',
+    publishing: 'Publishing to the open internet…',
+    completeLabel: '✅ Simulation complete — Content Upload (Inhalts-Upload)',
+    acknowledge: 'I understand',
+    modalLines: ['Connecting to BerlinNet Provider (fiktiv)…', 'Authenticating route… OK', 'Establishing secure tunnel… OK']
+  },
+  de: {
+    connecting: 'Verbinde mit Servern…',
+    preparing: 'Bereite Bundles vor…',
+    awaiting: 'Warte auf Startsequenz…',
+    preChecklistTitle: 'Vor dem Upload prüfen',
+    warningTitle: 'Geplanter automatischer Upload',
+    warningNotice: 'Warnung: Alle Bilder und Videos auf dieser Seite werden nach Ende des Countdowns automatisch hochgeladen.',
+    publishing: 'Veröffentliche im offenen Internet…',
+    completeLabel: '✅ Simulation abgeschlossen — Inhalts-Upload',
+    acknowledge: 'Verstanden',
+    modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK']
+  }
+};
+
+let currentLang = localStorage.getItem('site_lang') || 'en';
+
+function setLangButtons() {
+  [langEnBtn, langDeBtn].forEach(b => { if (!b) return; b.setAttribute('aria-pressed', b.dataset.lang === currentLang ? 'true' : 'false'); });
+}
+
+function updateLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('site_lang', lang);
+  setLangButtons();
+
+  const dict = DICT[lang] || DICT.en;
+  // update connecting texts
+  document.querySelectorAll('.checklist-item').forEach(el => {
+    const key = el.dataset.key;
+    const textEl = el.querySelector('.check-text');
+    if (textEl && dict[key]) textEl.textContent = dict[key];
+  });
+  document.querySelectorAll('.checklist-title').forEach(e => e.textContent = dict.preChecklistTitle || 'Pre-upload checklist');
+  if (connectTextEl) connectTextEl.textContent = dict.connecting;
+  if (connectStatusEl) connectStatusEl.textContent = dict.connecting;
+  document.querySelectorAll('.upload-title').forEach(e => e.textContent = dict.publishing);
+  document.querySelectorAll('#content-label').forEach(e => e.textContent = dict.completeLabel);
+  document.querySelectorAll('.modal-button').forEach(b => { if (b) b.textContent = dict.acknowledge; });
+  if (modalEl) modalEl.querySelector('#upload-warning-title').textContent = dict.warningTitle;
+  if (modalEl) modalEl.querySelector('#warning-paragraph').textContent = dict.warningNotice;
+}
+
+if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
+if (langDeBtn) langDeBtn.addEventListener('click', () => updateLanguage('de'));
+
+// Initialize language
+updateLanguage(currentLang);
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -44,7 +109,6 @@ function hideModal() {
 if (ackBtn) ackBtn.addEventListener('click', hideModal);
 
 function startOnboardingEffects() {
-  // brief jiggle to draw attention
   const card = modalEl ? modalEl.querySelector('.modal-card') : null;
   if (card) {
     card.classList.add('attention');
@@ -52,7 +116,6 @@ function startOnboardingEffects() {
     setTimeout(() => { if (card) card.style.animation = card.style.animation.replace(/,?\s*jiggle[^,]*/,''); }, 700);
   }
 
-  // progress fill
   if (modalProgressBarEl) {
     modalProgressBarEl.style.width = '0%';
     let p = 0;
@@ -63,12 +126,55 @@ function startOnboardingEffects() {
     }, 180);
   }
 
-  // typewriter lines
-  const lines = [
-    'Welcome — please review the automatic upload notice.',
-    '[DE] Willkommen — bitte Hinweis zum automatischen Upload beachten.',
-  ];
+  const dict = DICT[currentLang] || DICT.en;
+  const lines = dict.modalLines;
   typeLines(modalTyperEl, lines, 16, 320);
+}
+
+function startUploadSequence() {
+  if (!uploadOverlay) return;
+  // Fade to black, then show upload overlay with modal console
+  if (fadeScreen) {
+    fadeScreen.setAttribute('aria-hidden', 'false');
+    fadeScreen.classList.add('fade-in');
+  }
+
+  setTimeout(() => {
+    uploadOverlay.classList.add('is-visible');
+    uploadOverlay.setAttribute('aria-hidden', 'false');
+    if (warningLightsEl) warningLightsEl.style.display = 'none';
+
+    uploadTargets.forEach((item, idx) => {
+      setTimeout(() => {
+        item.classList.add('active');
+        setTimeout(() => item.classList.add('complete'), 1600);
+      }, idx * 350);
+    });
+
+    // master progress from 0 -> 100
+    let master = 0;
+    const masterTimer = setInterval(() => {
+      master = Math.min(100, master + 4 + Math.random() * 6);
+      if (masterBarEl) masterBarEl.style.width = `${master}%`;
+      if (master >= 100) clearInterval(masterTimer);
+    }, 200);
+
+    // console typing & globe pulse
+    const dict = DICT[currentLang] || DICT.en;
+    const lines = [dict.modalLines[0], 'Resolving DNS… OK', 'TLS handshake… OK', 'Transfer channels open… OK'];
+    typeLines(terminalEl, lines, 14, 180).then(() => {
+      if (uploadCompleteEl) {
+        uploadCompleteEl.hidden = false;
+        uploadCompleteEl.classList.add('show');
+        uploadCompleteEl.textContent = (currentLang === 'de') ? 'Upload abgeschlossen – Inhalte sind live (Simulation)' : 'Upload complete – content is live (simulation)';
+      }
+      if (contentUploadEl) contentUploadEl.hidden = false;
+      if (fadeScreen) {
+        fadeScreen.classList.remove('fade-in');
+        fadeScreen.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }, 500);
 }
 
 function updateTimersDisplay(seconds) {
@@ -81,36 +187,38 @@ function updateTimersDisplay(seconds) {
   }
 }
 
-// Flashing "Connecting to servers…" text (EN/DE)
+// Pre-upload animated spinner/pulse (keep subtle)
+(function decorateChecklist(){
+  const icons = document.querySelectorAll('.check-icon');
+  icons.forEach(i => i.classList.add('animated-icon'));
+})();
+
+// Flashing connecting text toggles EN/DE quickly for realism but language switch overrides
 (function startConnectingTicker(){
   let t = 0;
   setInterval(() => {
     t++;
     const dots = '.'.repeat(t % 4);
-    const en = `Connecting to servers${dots}`;
-    const de = `Verbinde mit Servern${dots}`;
+    const en = `${DICT.en.connecting}${dots}`;
+    const de = `${DICT.de.connecting}${dots}`;
     const text = (t % 8 < 4) ? en : de;
-    if (connectTextEl) connectTextEl.textContent = text;
-    if (connectStatusEl) connectStatusEl.textContent = text;
+    if (connectTextEl && !document.hidden) connectTextEl.textContent = text;
+    if (connectStatusEl && !document.hidden) connectStatusEl.textContent = text;
   }, 600);
 })();
 
-// Terminal typing effect
 function typeLines(el, lines, charDelay = 18, lineDelay = 250) {
   return new Promise(resolve => {
     if (!el) return resolve();
     let li = 0, ci = 0;
     el.textContent = '';
-    let cursorVisible = true;
 
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     el.appendChild(cursor);
 
     function typeNextChar() {
-      if (li >= lines.length) {
-        return resolve();
-      }
+      if (li >= lines.length) return resolve();
       const line = lines[li];
       if (ci < line.length) {
         cursor.before(document.createTextNode(line[ci]));
@@ -124,66 +232,7 @@ function typeLines(el, lines, charDelay = 18, lineDelay = 250) {
         setTimeout(typeNextChar, lineDelay);
       }
     }
-
-    // Keep cursor blinking using CSS; just start typing
     typeNextChar();
-  });
-}
-
-function startUploadSequence() {
-  if (!uploadOverlay) return;
-  uploadOverlay.classList.add('is-visible');
-  uploadOverlay.setAttribute('aria-hidden', 'false');
-  if (warningLightsEl) warningLightsEl.style.display = 'none';
-
-  // Sequentially animate target bars
-  uploadTargets.forEach((item, idx) => {
-    setTimeout(() => {
-      item.classList.add('active');
-      setTimeout(() => item.classList.add('complete'), 1600);
-    }, idx * 350);
-  });
-
-  // Master progress smooth fill
-  let master = 0;
-  const masterTimer = setInterval(() => {
-    master = Math.min(100, master + 3 + Math.random() * 5);
-    if (masterBarEl) masterBarEl.style.width = `${master}%`;
-    if (master >= 100) clearInterval(masterTimer);
-  }, 250);
-
-  // Terminal staged logs (EN/DE for realism)
-  const lines = [
-    '[DE] Initialisiere Upload-Pipeline…',
-    'Resolving DNS… OK (34 ms)',
-    'TLS 1.3 handshake… OK',
-    '[DE] Verbinde mit ARD… OK',
-    '[DE] Verbinde mit ZDF… OK',
-    '[DE] Verbinde mit Tagesschau… OK',
-    'Handshake Cloudflare/Akamai… OK',
-    'OAuth2 scope: upload.read write… OK',
-    '[DE] Sichere Metadaten hinzufügen (geo=DE, lang=de-DE)… OK',
-    'Queue: 4 videos, 12 photos',
-    'Multipart upload start…',
-    'Chunk 1/8… OK',
-    'Chunk 2/8… OK',
-    'Chunk 3/8… OK',
-    'Chunk 4/8… OK',
-    'Chunk 5/8… OK',
-    'Chunk 6/8… OK',
-    'Chunk 7/8… OK',
-    'Chunk 8/8… OK',
-    '[DE] Abschluss & Verifizierung… OK'
-  ];
-
-  typeLines(terminalEl, lines, 14, 180).then(() => {
-    // Show completion message and reveal content
-    if (uploadCompleteEl) {
-      uploadCompleteEl.hidden = false;
-      uploadCompleteEl.classList.add('show');
-      uploadCompleteEl.textContent = 'Upload abgeschlossen – Inhalte sind live (Simulation)';
-    }
-    if (contentUploadEl) contentUploadEl.hidden = false;
   });
 }
 
@@ -218,3 +267,6 @@ function ensureAutoplay() {
 
 ensureAutoplay();
 setTimeout(ensureAutoplay, 1200);
+
+// initialize language button states after DOM ready
+setLangButtons();
