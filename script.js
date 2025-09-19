@@ -170,3 +170,18 @@ const countdownInterval = setInterval(() => {
 
 // Show modal on page load
 showModal();
+
+function ensureAutoplay() {
+  document.querySelectorAll('.sp-embed-player iframe').forEach((f) => {
+    try {
+      const u = new URL(f.src);
+      if (!u.searchParams.get('autoplay')) u.searchParams.set('autoplay', '1');
+      u.searchParams.set('muted', '1');
+      f.setAttribute('allow', 'autoplay; fullscreen');
+      if (f.getAttribute('src') !== u.toString()) f.src = u.toString();
+    } catch (e) {}
+  });
+}
+
+ensureAutoplay();
+setTimeout(ensureAutoplay, 1200);
