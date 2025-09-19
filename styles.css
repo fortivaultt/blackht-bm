@@ -75,6 +75,7 @@ img {
 .modal-overlay.is-visible {
   display: flex;
   animation: fadeIn 0.25s ease-out;
+  backdrop-filter: blur(2px);
 }
 
 .modal-card {
@@ -86,11 +87,17 @@ img {
   transform: scale(0.95);
   animation: popIn 0.28s ease-out forwards;
 }
+.modal-card.glow { animation: popIn 0.28s ease-out forwards, glowPulse 2.4s ease-in-out infinite 0.3s; }
 
 .modal-header {
   padding: 16px 20px;
   border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+.warning-beacon { width: 12px; height: 12px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 8px rgba(255,59,48,0.8); position: relative; }
+.warning-beacon::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(255,59,48,0.5); animation: beacon 1.4s ease-out infinite; }
 
 .modal-body {
   padding: 16px 20px;
@@ -231,11 +238,21 @@ img {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes glowPulse { 0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 0 rgba(255,69,0,0); } 50% { box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 18px rgba(255,69,0,0.35); } }
+@keyframes beacon { 0% { transform: scale(0.9); opacity: 0.7; } 70% { transform: scale(1.25); opacity: 0; } 100% { transform: scale(1.25); opacity: 0; } }
+@keyframes jiggle { 0%,100%{ transform: translateX(0); } 20%{ transform: translateX(-1px); } 40%{ transform: translateX(1px); } 60%{ transform: translateX(-1px); } 80%{ transform: translateX(1px); } }
 
 @media (max-width: 480px) {
   .target-name { min-width: 120px; }
   .modal-card, .upload-panel { padding: 16px; }
 }
+
+/* Modal extras */
+.modal-typer { font-family: Menlo, Monaco, Consolas, monospace; font-size: 12px; background: #fafafa; border: 1px dashed #eee; border-radius: 8px; padding: 10px; color: #333; margin-top: 10px; }
+.modal-typer .cursor { display: inline-block; width: 8px; height: 1em; background: #ff4500; margin-left: 2px; vertical-align: bottom; animation: caret 1s step-end infinite; }
+.modal-progress { height: 8px; background: #f0f0f0; border-radius: 8px; overflow: hidden; margin: 8px 0; }
+.modal-progress .bar { background: #ff4500; }
+.modal-lights { margin-top: 8px; }
 
 /* Countdown status and progress */
 .countdown-status { margin-top: 8px; font-size: 14px; color: #ff4500; }
