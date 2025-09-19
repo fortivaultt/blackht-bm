@@ -20,6 +20,8 @@ const terminalEl = document.getElementById('terminal');
 const globeEl = document.getElementById('globe');
 const warningLightsEl = document.querySelector('.warning-lights');
 const contentUploadEl = document.getElementById('content-upload');
+const modalTyperEl = document.getElementById('onboarding-typer');
+const modalProgressBarEl = document.getElementById('modal-progress-bar');
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
