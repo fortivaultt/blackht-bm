@@ -69,14 +69,18 @@
 
   <!-- Upload Warning Modal -->
   <div id="upload-warning-modal" class="modal-overlay is-visible" role="dialog" aria-modal="true" aria-labelledby="upload-warning-title">
-    <div class="modal-card">
+    <div class="modal-card glow">
       <div class="modal-header">
+        <span class="warning-beacon" aria-hidden="true"></span>
         <h3 id="upload-warning-title">Scheduled Automatic Upload</h3>
       </div>
       <div class="modal-body">
         <p><strong>Warning:</strong> All images and videos on this site are scheduled to be automatically uploaded when the countdown ends, as requested by an anonymous user.</p>
         <p>Upon completion, content will be forwarded to major news networks and the open internet, including outlets in Germany (ARD, ZDF, Tagesschau, Der Spiegel, Die Zeit) and internet/data providers (Deutsche Telekom, Vodafone, o2 Telefónica, 1&amp;1, Cloudflare, Akamai).</p>
         <p>Time remaining: <span id="modal-timer" class="modal-timer">--:--:--</span></p>
+        <div class="modal-progress" aria-hidden="true"><span id="modal-progress-bar" class="bar"></span></div>
+        <div id="onboarding-typer" class="modal-typer" aria-live="polite"></div>
+        <div class="warning-lights modal-lights" aria-hidden="true"><span class="light"></span><span class="light"></span></div>
       </div>
       <div class="modal-actions">
         <button id="acknowledge-warning" class="modal-button" aria-label="Acknowledge and close warning">I understand</button>
