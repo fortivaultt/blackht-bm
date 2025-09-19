@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video and Photo Gallery with Countdown</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>My Video and Photo Gallery</h1>
+    </header>
+    
+    <section id="media-gallery">
+        <h2>Media Gallery</h2>
+        <div class="gallery">
+            <!-- Video 1 (ScreenPal Embed) -->
+            <div class="video-container">
+                <div class="sp-embed-player" data-id="cTQqc8nDc9j">
+                    <iframe width="100%" height="100%" style="border:0;" scrolling="no" src="https://go.screenpal.com/player/cTQqc8nDc9j?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+                </div>
+            </div>
+            <!-- Video 2 (ScreenPal Embed) -->
+            <div class="video-container">
+                <div class="sp-embed-player" data-id="cTQqc9nDc9F">
+                    <iframe width="100%" height="100%" style="border:0;" scrolling="no" src="https://go.screenpal.com/player/cTQqc9nDc9F?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+                </div>
+            </div>
+            <!-- Photo 1 (ScreenPal Embed) -->
+            <div class="image-container">
+                <div class="sp-embed-player" data-id="cTQqiJnDVdt">
+                    <iframe width="100%" height="100%" style="border:0;" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdt?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+                </div>
+            </div>
+            <!-- Photo 2 (ScreenPal Embed) -->
+            <div class="image-container">
+                <div class="sp-embed-player" data-id="cTQqiJnDVdu">
+                    <iframe width="100%" height="100%" style="border:0;" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdu?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+                </div>
+            </div>
+            <!-- Photo 3 (Placeholder for local or future link) -->
+            <img src="images/photo3.jpg" alt="Photo 3" width="400">
+        </div>
+    </section>
+    
+    <section id="countdown">
+        <h2>12-Hour Countdown</h2>
+        <div id="timer">Loading...</div>
+    </section>
+    
+    <script src="script.js"></script>
+</body>
+</html>

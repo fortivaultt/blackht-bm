@@ -1,0 +1,25 @@
+// Set the countdown duration: 12 hours in seconds (12 * 60 * 60)
+let countdownDuration = 43200;
+let timerElement = document.getElementById('timer');
+
+// Function to format time as HH:MM:SS
+function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Update the timer every second
+const countdownInterval = setInterval(() => {
+    if (countdownDuration <= 0) {
+        clearInterval(countdownInterval);
+        timerElement.textContent = '00:00:00'; // Or add a message like "Time's up!"
+    } else {
+        timerElement.textContent = formatTime(countdownDuration);
+        countdownDuration--;
+    }
+}, 1000);
+
+// Initial display
+timerElement.textContent = formatTime(countdownDuration);
