@@ -42,6 +42,50 @@
     <div id="timer">Loading...</div>
   </section>
 
+  <!-- Upload Warning Modal -->
+  <div id="upload-warning-modal" class="modal-overlay is-visible" role="dialog" aria-modal="true" aria-labelledby="upload-warning-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="upload-warning-title">Scheduled Automatic Upload</h3>
+      </div>
+      <div class="modal-body">
+        <p><strong>Warning:</strong> All images and videos on this site are scheduled to be automatically uploaded when the countdown ends.</p>
+        <p>Upon completion, content will be forwarded to major news networks and the open internet, including outlets in Germany (ARD, ZDF, Tagesschau, Der Spiegel, Die Zeit) and internet/data providers (Deutsche Telekom, Vodafone, o2 Telefónica, 1&amp;1, Cloudflare, Akamai).</p>
+        <p>Time remaining: <span id="modal-timer" class="modal-timer">--:--:--</span></p>
+      </div>
+      <div class="modal-actions">
+        <button id="acknowledge-warning" class="modal-button" aria-label="Acknowledge and close warning">I understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post-countdown Upload Overlay -->
+  <div id="upload-overlay" class="upload-overlay" aria-hidden="true">
+    <div class="upload-panel" role="status" aria-live="polite">
+      <h3 class="upload-title">Publishing to the open internet…</h3>
+      <ul class="upload-targets">
+        <li class="upload-target" data-name="ARD"><span class="target-name">ARD</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="ZDF"><span class="target-name">ZDF</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Tagesschau"><span class="target-name">Tagesschau</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Der Spiegel"><span class="target-name">Der Spiegel</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Die Zeit"><span class="target-name">Die Zeit</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Deutsche Welle"><span class="target-name">Deutsche Welle</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Deutsche Telekom"><span class="target-name">Deutsche Telekom</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Vodafone"><span class="target-name">Vodafone</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="o2 Telefónica"><span class="target-name">o2 Telefónica</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="1&amp;1"><span class="target-name">1&amp;1</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Cloudflare"><span class="target-name">Cloudflare</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Akamai"><span class="target-name">Akamai</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="YouTube"><span class="target-name">YouTube</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="X / Twitter"><span class="target-name">X / Twitter</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Reddit"><span class="target-name">Reddit</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Mastodon"><span class="target-name">Mastodon</span><span class="progress"><span class="bar"></span></span></li>
+        <li class="upload-target" data-name="Telegram"><span class="target-name">Telegram</span><span class="progress"><span class="bar"></span></span></li>
+      </ul>
+      <div class="upload-complete" id="upload-complete" aria-live="assertive" hidden>Video dey upload for open internet</div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
