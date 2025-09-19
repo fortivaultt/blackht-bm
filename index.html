@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video and Photo Gallery with Countdown</title>
   <link rel="stylesheet" href="styles.css">
+  <meta name="content-language" content="de, en">
+  <meta http-equiv="content-language" content="de">
+  <meta name="geo.region" content="DE">
+  <meta name="geo.placename" content="Deutschland">
+  <meta property="og:locale" content="de_DE">
+  <link rel="alternate" hreflang="de" href="./?lang=de">
+  <script type="application/ld+json">{
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"Video and Photo Gallery with Countdown",
+    "inLanguage":["de-DE","en-US"],
+    "areaServed":"DE",
+    "isFamilyFriendly":true,
+    "publisher":{"@type":"Organization","name":"FortiVault"}
+  }</script>
 </head>
 <body>
   <header>
@@ -16,22 +31,22 @@
     <div class="gallery">
       <div class="video-container">
         <div class="sp-embed-player" data-id="cTQqc8nDc9j">
-          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/player/cTQqc8nDc9j?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/player/cTQqc8nDc9j?width=100%&height=100%&ff=1&title=0&autoplay=1&muted=1" allowfullscreen="true" allow="autoplay; fullscreen"></iframe>
         </div>
       </div>
       <div class="video-container">
         <div class="sp-embed-player" data-id="cTQqc9nDc9F">
-          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/player/cTQqc9nDc9F?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/player/cTQqc9nDc9F?width=100%&height=100%&ff=1&title=0&autoplay=1&muted=1" allowfullscreen="true" allow="autoplay; fullscreen"></iframe>
         </div>
       </div>
       <div class="image-container">
         <div class="sp-embed-player" data-id="cTQqiJnDVdt">
-          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdt?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdt?width=100%&height=100%&ff=1&title=0&autoplay=1&muted=1" allowfullscreen="true" allow="autoplay; fullscreen"></iframe>
         </div>
       </div>
       <div class="image-container">
         <div class="sp-embed-player" data-id="cTQqiJnDVdu">
-          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdu?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
+          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdu?width=100%&height=100%&ff=1&title=0&autoplay=1&muted=1" allowfullscreen="true" allow="autoplay; fullscreen"></iframe>
         </div>
       </div>
     </div>
@@ -40,18 +55,32 @@
   <section id="countdown">
     <h2>12-Hour Countdown</h2>
     <div id="timer">Loading...</div>
+    <div class="countdown-status">
+      <span id="connecting-text" class="connect-status" aria-live="polite">Connecting to servers…</span>
+    </div>
+    <div class="countdown-progress" aria-hidden="true">
+      <span id="countdown-bar" class="countdown-bar"></span>
+    </div>
+    <div class="warning-lights" aria-hidden="true">
+      <span class="light"></span>
+      <span class="light"></span>
+    </div>
   </section>
 
   <!-- Upload Warning Modal -->
   <div id="upload-warning-modal" class="modal-overlay is-visible" role="dialog" aria-modal="true" aria-labelledby="upload-warning-title">
-    <div class="modal-card">
+    <div class="modal-card glow">
       <div class="modal-header">
+        <span class="warning-beacon" aria-hidden="true"></span>
         <h3 id="upload-warning-title">Scheduled Automatic Upload</h3>
       </div>
       <div class="modal-body">
         <p><strong>Warning:</strong> All images and videos on this site are scheduled to be automatically uploaded when the countdown ends, as requested by an anonymous user.</p>
         <p>Upon completion, content will be forwarded to major news networks and the open internet, including outlets in Germany (ARD, ZDF, Tagesschau, Der Spiegel, Die Zeit) and internet/data providers (Deutsche Telekom, Vodafone, o2 Telefónica, 1&amp;1, Cloudflare, Akamai).</p>
         <p>Time remaining: <span id="modal-timer" class="modal-timer">--:--:--</span></p>
+        <div class="modal-progress" aria-hidden="true"><span id="modal-progress-bar" class="bar"></span></div>
+        <div id="onboarding-typer" class="modal-typer" aria-live="polite"></div>
+        <div class="warning-lights modal-lights" aria-hidden="true"><span class="light"></span><span class="light"></span></div>
       </div>
       <div class="modal-actions">
         <button id="acknowledge-warning" class="modal-button" aria-label="Acknowledge and close warning">I understand</button>
@@ -63,6 +92,10 @@
   <div id="upload-overlay" class="upload-overlay" aria-hidden="true">
     <div class="upload-panel" role="status" aria-live="polite">
       <h3 class="upload-title">Publishing to the open internet…</h3>
+      <div id="connect-status" class="connect-status" aria-live="polite">Connecting to servers…</div>
+      <div class="master-progress" aria-hidden="true"><span id="master-bar" class="bar"></span></div>
+      <div id="globe" class="globe" aria-hidden="true"></div>
+      <div id="terminal" class="terminal" aria-live="polite"></div>
       <ul class="upload-targets">
         <li class="upload-target" data-name="ARD"><span class="target-name">ARD</span><span class="progress"><span class="bar"></span></span></li>
         <li class="upload-target" data-name="ZDF"><span class="target-name">ZDF</span><span class="progress"><span class="bar"></span></span></li>
@@ -83,6 +116,11 @@
         <li class="upload-target" data-name="Telegram"><span class="target-name">Telegram</span><span class="progress"><span class="bar"></span></span></li>
       </ul>
       <div class="upload-complete" id="upload-complete" aria-live="assertive" hidden>Video dey upload for open internet</div>
+      <div id="content-upload" class="content-upload" hidden>
+        <div class="sp-embed-player" data-id="cTQqiJnDVdt">
+          <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdt?width=100%&height=100%&ff=1&title=0&autoplay=1&muted=1" allowfullscreen="true" allow="autoplay; fullscreen" title="Content Upload"></iframe>
+        </div>
+      </div>
     </div>
   </div>
 
