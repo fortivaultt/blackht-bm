@@ -1,14 +1,14 @@
 // Countdown: 12 hours in seconds
 let countdownDuration = 43200;
+const initialDuration = countdownDuration;
 
 // Elements
 const timerElement = document.getElementById('timer');
 const modalEl = document.getElementById('upload-warning-modal');
 const modalTimerEl = document.getElementById('modal-timer');
 const ackBtn = document.getElementById('acknowledge-warning');
-const uploadOverlay = document.getElementById('upload-overlay');
-const uploadTargets = document.querySelectorAll('.upload-target');
-const uploadCompleteEl = document.getElementById('upload-complete');
+const modalProgressFill = document.getElementById('modal-progress-fill');
+const pageProgressFill = document.getElementById('page-progress-fill');
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -18,41 +18,14 @@ function formatTime(seconds) {
 }
 
 function showModal() {
-  if (modalEl) {
-    modalEl.classList.add('is-visible');
-  }
+  if (modalEl) modalEl.classList.add('is-visible');
 }
 
 function hideModal() {
-  if (modalEl) {
-    modalEl.classList.remove('is-visible');
-  }
+  if (modalEl) modalEl.classList.remove('is-visible');
 }
 
-if (ackBtn) {
-  ackBtn.addEventListener('click', hideModal);
-}
-
-function startUploadSequence() {
-  if (!uploadOverlay) return;
-  uploadOverlay.classList.add('is-visible');
-  uploadOverlay.setAttribute('aria-hidden', 'false');
-
-  uploadTargets.forEach((item, idx) => {
-    setTimeout(() => {
-      item.classList.add('active');
-      setTimeout(() => item.classList.add('complete'), 1600);
-    }, idx * 350);
-  });
-
-  const totalTime = uploadTargets.length * 350 + 1800;
-  setTimeout(() => {
-    if (uploadCompleteEl) {
-      uploadCompleteEl.hidden = false;
-      uploadCompleteEl.classList.add('show');
-    }
-  }, totalTime);
-}
+if (ackBtn) ackBtn.addEventListener('click', hideModal);
 
 function updateTimersDisplay(seconds) {
   const text = formatTime(seconds);
@@ -60,16 +33,26 @@ function updateTimersDisplay(seconds) {
   if (modalTimerEl) modalTimerEl.textContent = text;
 }
 
+function updateProgress(secondsRemaining) {
+  const progressed = Math.min(Math.max((initialDuration - secondsRemaining) / initialDuration, 0), 1);
+  const pct = (progressed * 100).toFixed(2) + '%';
+  if (modalProgressFill) modalProgressFill.style.width = pct;
+  if (pageProgressFill) pageProgressFill.style.width = pct;
+}
+
 // Initialize displays
 updateTimersDisplay(countdownDuration);
+updateProgress(countdownDuration);
 
 const countdownInterval = setInterval(() => {
   if (countdownDuration <= 0) {
     clearInterval(countdownInterval);
+    countdownDuration = 0;
     updateTimersDisplay(0);
-    startUploadSequence();
+    updateProgress(0);
   } else {
     updateTimersDisplay(countdownDuration);
+    updateProgress(countdownDuration);
     countdownDuration--;
   }
 }, 1000);
