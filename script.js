@@ -192,10 +192,60 @@ function updateTimersDisplay(seconds) {
   }
 }
 
-// Pre-upload animated spinner/pulse (keep subtle)
+// Pre-upload animated spinner/pulse (keep subtle) + checklist sequence
+function runChecklistSequence() {
+  const items = {
+    connecting: document.querySelector('.checklist-item[data-key="connecting"]'),
+    preparing: document.querySelector('.checklist-item[data-key="preparing"]'),
+    awaiting: document.querySelector('.checklist-item[data-key="awaiting"]')
+  };
+
+  // helper to mark complete and swap icon to check
+  function markComplete(el) {
+    if (!el) return;
+    const icon = el.querySelector('.check-icon');
+    const textEl = el.querySelector('.check-text');
+    if (icon) { icon.classList.remove('animated-icon'); icon.textContent = '✅'; }
+    el.classList.add('completed');
+    if (textEl) textEl.classList.add('status');
+  }
+
+  // CONNECTING -> Connected -> fade away
+  if (items.connecting) {
+    const icon = items.connecting.querySelector('.check-icon');
+    const textEl = items.connecting.querySelector('.check-text');
+    // start as connecting (already set)
+    setTimeout(() => {
+      if (textEl) textEl.textContent = (currentLang === 'de') ? 'Verbunden' : 'Connected';
+      markComplete(items.connecting);
+      // fade out after brief delay
+      setTimeout(() => items.connecting.classList.add('fade-away'), 1200);
+    }, 2400);
+  }
+
+  // PREPARING -> Bundles compiled -> fade away
+  if (items.preparing) {
+    const textEl = items.preparing.querySelector('.check-text');
+    // ensure preparing label shows immediately then complete
+    setTimeout(() => {
+      if (textEl) textEl.textContent = DICT[currentLang].preparing || DICT.en.preparing;
+    }, 300);
+
+    setTimeout(() => {
+      if (textEl) textEl.textContent = (currentLang === 'de') ? 'Bundles abgeschlossen' : 'Bundles compiled';
+      markComplete(items.preparing);
+      setTimeout(() => items.preparing.classList.add('fade-away'), 1200);
+    }, 4200);
+  }
+
+  // Ensure awaiting remains visible and pulsing (no action needed)
+}
+
 (function decorateChecklist(){
   const icons = document.querySelectorAll('.check-icon');
   icons.forEach(i => i.classList.add('animated-icon'));
+  // kick off sequence
+  runChecklistSequence();
 })();
 
 // Flashing connecting text toggles EN/DE quickly for realism but language switch overrides
