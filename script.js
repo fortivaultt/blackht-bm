@@ -349,13 +349,15 @@ function typeLines(el, lines, charDelay = 18, lineDelay = 250) {
 updateTimersDisplay(countdownDuration);
 
 const countdownInterval = setInterval(() => {
+  // recompute remaining seconds from stored end timestamp to keep accurate across tabs/reloads
+  countdownDuration = getRemainingSeconds();
   if (countdownDuration <= 0) {
     clearInterval(countdownInterval);
     updateTimersDisplay(0);
+    clearStoredEndTimestamp();
     startUploadSequence();
   } else {
     updateTimersDisplay(countdownDuration);
-    countdownDuration--;
   }
 }, 1000);
 
