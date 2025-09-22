@@ -161,4 +161,8 @@ header.site-header {
   .modal-card, .upload-panel { padding: 16px; }
   .gallery { gap: 12px; }
   .video-container, .image-container { width: 92%; height: 180px; }
+  .identity-grid { flex-direction: column; }
+  .identity-photo-wrapper { width: 100%; flex: 0 0 auto; }
+  .identity-photo { height: 180px; object-fit: cover; }
+  .identity-summary { padding: 12px; }
 }
