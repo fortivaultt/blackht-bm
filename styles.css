@@ -138,6 +138,14 @@ header.site-header {
 .professional-footer a:hover { text-decoration: underline; }
 .footer-note { margin-top: 12px; font-size: 12px; color: #8ab4d9; }
 
+.identity-panel { margin: 12px 0; padding: 10px 12px; border-radius: 10px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.02); }
+.identity-title { margin: 0 0 8px; color: #cfeeff; font-size: 14px; }
+.identity-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.identity-item { display: flex; align-items: baseline; gap: 8px; color: #dbeeff; }
+.identity-key { min-width: 70px; font-weight: 600; color: #eaf8ff; }
+.identity-value { color: #dff2ff; }
+.identity-note { color: #9fbbe8; font-style: italic; }
+
 @media (max-width: 480px) {
   .target-name { min-width: 120px; }
   .modal-card, .upload-panel { padding: 16px; }

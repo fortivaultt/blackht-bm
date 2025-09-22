@@ -38,7 +38,10 @@ const DICT = {
     publishing: 'Publishing to the open internet…',
     completeLabel: '✅ Simulation complete — Content Upload (Inhalts-Upload)',
     acknowledge: 'I understand',
-    modalLines: ['Connecting to BerlinNet Provider (fiktiv)…', 'Authenticating route… OK', 'Establishing secure tunnel… OK']
+    modalLines: ['Connecting to BerlinNet Provider (fiktiv)…', 'Authenticating route… OK', 'Establishing secure tunnel… OK'],
+    identityTitle: 'Provided details',
+    nameLabel: 'Name:',
+    addressLabel: 'Address:'
   },
   de: {
     connecting: 'Verbinde mit Servern…',
@@ -50,7 +53,10 @@ const DICT = {
     publishing: 'Veröffentliche im offenen Internet…',
     completeLabel: '✅ Simulation abgeschlossen — Inhalts-Upload',
     acknowledge: 'Verstanden',
-    modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK']
+    modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK'],
+    identityTitle: 'Angegebene Details',
+    nameLabel: 'Name:',
+    addressLabel: 'Adresse:'
   }
 };
 
@@ -85,6 +91,13 @@ function updateLanguage(lang) {
   document.querySelectorAll('.modal-button').forEach(b => { if (b) b.textContent = dict.acknowledge; });
   if (modalEl) modalEl.querySelector('#upload-warning-title').textContent = dict.warningTitle;
   if (modalEl) modalEl.querySelector('#warning-paragraph').textContent = dict.warningNotice;
+
+  const idTitle = document.getElementById('identity-title');
+  if (idTitle) idTitle.textContent = dict.identityTitle || 'Provided details';
+  const idName = document.getElementById('identity-name-label');
+  if (idName) idName.textContent = dict.nameLabel || 'Name:';
+  const idAddr = document.getElementById('identity-address-label');
+  if (idAddr) idAddr.textContent = dict.addressLabel || 'Address:';
 }
 
 if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
