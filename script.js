@@ -1,6 +1,26 @@
 // Countdown: 12 hours in seconds
-let countdownDuration = 43200;
-const TOTAL_SECONDS = countdownDuration;
+const DEFAULT_DURATION = 43200; // 12 hours in seconds
+
+function getStoredEndTimestamp() {
+  const raw = localStorage.getItem('countdown_end');
+  const n = raw ? parseInt(raw, 10) : NaN;
+  return Number.isFinite(n) ? n : null;
+}
+function setStoredEndTimestamp(ts) { localStorage.setItem('countdown_end', String(ts)); }
+function clearStoredEndTimestamp() { localStorage.removeItem('countdown_end'); }
+
+let endTimestamp = getStoredEndTimestamp();
+if (!endTimestamp) {
+  endTimestamp = Date.now() + DEFAULT_DURATION * 1000;
+  setStoredEndTimestamp(endTimestamp);
+}
+
+function getRemainingSeconds() {
+  return Math.max(0, Math.ceil((endTimestamp - Date.now()) / 1000));
+}
+
+let countdownDuration = getRemainingSeconds();
+const TOTAL_SECONDS = DEFAULT_DURATION;
 
 // Elements
 const timerElement = document.getElementById('timer');
