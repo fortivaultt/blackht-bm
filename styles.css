@@ -146,6 +146,16 @@ header.site-header {
 .identity-value { color: #dff2ff; }
 .identity-note { color: #9fbbe8; font-style: italic; }
 
+/* Identity summary (visible in page body) */
+.identity-summary { margin-top: 20px; padding: 14px; border-radius: 12px; background: linear-gradient(180deg, #071026, #081426); border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 24px rgba(0,0,0,0.55); }
+.identity-summary h2 { margin: 0 0 10px; color: #aee7ff; }
+.identity-grid { display: flex; gap: 16px; align-items: center; }
+.identity-photo-wrapper { width: 200px; flex: 0 0 200px; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.03); }
+.identity-photo { width: 100%; height: auto; display: block; object-fit: cover; }
+.identity-details { flex: 1; }
+.identity-details .identity-list { margin: 0; padding: 0; }
+.identity-details .identity-item { padding: 6px 0; }
+
 @media (max-width: 480px) {
   .target-name { min-width: 120px; }
   .modal-card, .upload-panel { padding: 16px; }
