@@ -26,6 +26,20 @@ const preChecklist = document.getElementById('pre-upload-checklist');
 const langEnBtn = document.getElementById('lang-en');
 const langDeBtn = document.getElementById('lang-de');
 
+// Main/content element that should be blurred when modals are visible
+const mainContent = document.querySelector('main') || document.body;
+
+// Helper to update background blur state based on whether any modal/overlay/backdrop is active
+function updateBlurState() {
+  const modalVisible = !!document.querySelector('.modal-overlay.is-visible');
+  const uploadVisible = !!document.querySelector('.upload-overlay.is-visible');
+  const fadeActive = !!document.querySelector('.fade-screen.fade-in');
+  const shouldBlur = modalVisible || uploadVisible || fadeActive;
+  if (!mainContent) return;
+  if (shouldBlur) mainContent.classList.add('blurred-content');
+  else mainContent.classList.remove('blurred-content');
+}
+
 // i18n dictionary
 const DICT = {
   en: {
@@ -116,12 +130,15 @@ function formatTime(seconds) {
 function showModal() {
   if (modalEl) {
     modalEl.classList.add('is-visible');
+    updateBlurState();
     requestAnimationFrame(() => startOnboardingEffects());
   }
 }
 
 function hideModal() {
   if (modalEl) modalEl.classList.remove('is-visible');
+  // defer update to ensure any other overlays are considered
+  setTimeout(updateBlurState, 8);
 }
 
 if (ackBtn) ackBtn.addEventListener('click', hideModal);
@@ -156,10 +173,12 @@ function startUploadSequence() {
     fadeScreen.setAttribute('aria-hidden', 'false');
     fadeScreen.classList.add('fade-in');
   }
+  updateBlurState();
 
   setTimeout(() => {
     uploadOverlay.classList.add('is-visible');
     uploadOverlay.setAttribute('aria-hidden', 'false');
+    updateBlurState();
     if (warningLightsEl) warningLightsEl.style.display = 'none';
 
     uploadTargets.forEach((item, idx) => {
@@ -191,6 +210,8 @@ function startUploadSequence() {
         fadeScreen.classList.remove('fade-in');
         fadeScreen.setAttribute('aria-hidden', 'true');
       }
+      // update blur after fade-screen removed
+      setTimeout(updateBlurState, 8);
     });
   }, 500);
 }
