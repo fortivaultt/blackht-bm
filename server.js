@@ -4,6 +4,8 @@ const path = require('path');
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const root = path.resolve(__dirname);
+const COUNTDOWN_FILE = path.join(root, 'countdown.json');
+const DEFAULT_DURATION_MS = 43200 * 1000; // 12 hours
 
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -34,9 +36,70 @@ function serveFile(res, filePath) {
   });
 }
 
+function readCountdownFromDisk() {
+  try {
+    if (!fs.existsSync(COUNTDOWN_FILE)) return null;
+    const raw = fs.readFileSync(COUNTDOWN_FILE, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed.endTimestamp !== 'number') return null;
+    return parsed.endTimestamp;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeCountdownToDisk(ts) {
+  try {
+    fs.writeFileSync(COUNTDOWN_FILE, JSON.stringify({ endTimestamp: ts }), 'utf8');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function ensureCountdown() {
+  let ts = readCountdownFromDisk();
+  if (!ts || typeof ts !== 'number' || ts <= Date.now()) {
+    ts = Date.now() + DEFAULT_DURATION_MS;
+    writeCountdownToDisk(ts);
+  }
+  return ts;
+}
+
 const server = http.createServer((req, res) => {
   try {
     const urlPath = decodeURIComponent(req.url.split('?')[0]);
+
+    // API: persistent countdown
+    if (urlPath === '/api/countdown') {
+      if (req.method === 'GET') {
+        const ts = ensureCountdown();
+        return send(res, 200, JSON.stringify({ endTimestamp: ts }), { 'Content-Type': 'application/json' });
+      }
+      // allow reset via POST with JSON { reset: true } to create a new countdown
+      if (req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+          try {
+            const data = body ? JSON.parse(body) : {};
+            if (data && data.reset) {
+              const ts = Date.now() + DEFAULT_DURATION_MS;
+              writeCountdownToDisk(ts);
+              return send(res, 200, JSON.stringify({ endTimestamp: ts }), { 'Content-Type': 'application/json' });
+            }
+            // otherwise return current
+            const ts = ensureCountdown();
+            return send(res, 200, JSON.stringify({ endTimestamp: ts }), { 'Content-Type': 'application/json' });
+          } catch (e) {
+            return send(res, 400, JSON.stringify({ error: 'Invalid JSON' }), { 'Content-Type': 'application/json' });
+          }
+        });
+        return;
+      }
+      return send(res, 405, 'Method Not Allowed');
+    }
+
     let filePath = path.join(root, urlPath);
 
     if (urlPath === '/' || urlPath === '') {

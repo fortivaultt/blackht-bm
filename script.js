@@ -9,17 +9,35 @@ function getStoredEndTimestamp() {
 function setStoredEndTimestamp(ts) { localStorage.setItem('countdown_end', String(ts)); }
 function clearStoredEndTimestamp() { localStorage.removeItem('countdown_end'); }
 
-let endTimestamp = getStoredEndTimestamp();
-if (!endTimestamp) {
-  endTimestamp = Date.now() + DEFAULT_DURATION * 1000;
-  setStoredEndTimestamp(endTimestamp);
+let endTimestamp = null;
+
+async function fetchServerEndTimestamp() {
+  try {
+    const res = await fetch('/api/countdown', { method: 'GET', cache: 'no-store' });
+    if (!res.ok) throw new Error('Network response not ok');
+    const data = await res.json();
+    if (data && typeof data.endTimestamp === 'number') return data.endTimestamp;
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+// If server is not available, fallback to localStorage behavior
+function computeLocalEndTimestamp() {
+  let ts = getStoredEndTimestamp();
+  if (!ts) {
+    ts = Date.now() + DEFAULT_DURATION * 1000;
+    setStoredEndTimestamp(ts);
+  }
+  return ts;
 }
 
 function getRemainingSeconds() {
   return Math.max(0, Math.ceil((endTimestamp - Date.now()) / 1000));
 }
 
-let countdownDuration = getRemainingSeconds();
+let countdownDuration = 0;
 const TOTAL_SECONDS = DEFAULT_DURATION;
 
 // Elements
@@ -86,7 +104,7 @@ const DICT = {
     warningTitle: 'Geplanter automatischer Upload',
     warningNotice: 'Warnung: Alle Bilder und Videos auf dieser Seite werden nach Ende des Countdowns automatisch hochgeladen.',
     publishing: 'Veröffentliche im offenen Internet…',
-    completeLabel: '✅ Simulation abgeschlossen — Inhalts-Upload',
+    completeLabel: '✅ Simulation abgeschlossen �� Inhalts-Upload',
     acknowledge: 'Verstanden',
     modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK'],
     identityTitle: 'Angegebene Details',
@@ -357,24 +375,24 @@ function typeLines(el, lines, charDelay = 18, lineDelay = 250) {
   });
 }
 
-// Initialize displays
-updateTimersDisplay(countdownDuration);
-
-const countdownInterval = setInterval(() => {
-  // recompute remaining seconds from stored end timestamp to keep accurate across tabs/reloads
+function startCountdownLoop() {
+  // Initialize displays
   countdownDuration = getRemainingSeconds();
-  if (countdownDuration <= 0) {
-    clearInterval(countdownInterval);
-    updateTimersDisplay(0);
-    clearStoredEndTimestamp();
-    startUploadSequence();
-  } else {
-    updateTimersDisplay(countdownDuration);
-  }
-}, 1000);
+  updateTimersDisplay(countdownDuration);
 
-// Show modal on page load
-showModal();
+  const countdownInterval = setInterval(() => {
+    // recompute remaining seconds from stored end timestamp to keep accurate across tabs/reloads
+    countdownDuration = getRemainingSeconds();
+    if (countdownDuration <= 0) {
+      clearInterval(countdownInterval);
+      updateTimersDisplay(0);
+      clearStoredEndTimestamp();
+      startUploadSequence();
+    } else {
+      updateTimersDisplay(countdownDuration);
+    }
+  }, 1000);
+}
 
 function ensureAutoplay() {
   document.querySelectorAll('.sp-embed-player iframe').forEach((f) => {
@@ -393,3 +411,19 @@ setTimeout(ensureAutoplay, 1200);
 
 // initialize language button states after DOM ready
 setLangButtons();
+
+// Boot sequence: obtain persistent end timestamp from server; fallback to localStorage when offline
+(async function init() {
+  const serverTs = await fetchServerEndTimestamp();
+  if (serverTs && typeof serverTs === 'number') {
+    endTimestamp = serverTs;
+    setStoredEndTimestamp(endTimestamp);
+  } else {
+    // server unreachable — fall back to local storage or create a local countdown
+    endTimestamp = computeLocalEndTimestamp();
+  }
+
+  // start the countdown loop and show modal
+  startCountdownLoop();
+  showModal();
+})();
