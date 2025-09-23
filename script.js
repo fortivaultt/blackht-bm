@@ -1,6 +1,26 @@
 // Countdown: 12 hours in seconds
-let countdownDuration = 43200;
-const TOTAL_SECONDS = countdownDuration;
+const DEFAULT_DURATION = 43200; // 12 hours in seconds
+
+function getStoredEndTimestamp() {
+  const raw = localStorage.getItem('countdown_end');
+  const n = raw ? parseInt(raw, 10) : NaN;
+  return Number.isFinite(n) ? n : null;
+}
+function setStoredEndTimestamp(ts) { localStorage.setItem('countdown_end', String(ts)); }
+function clearStoredEndTimestamp() { localStorage.removeItem('countdown_end'); }
+
+let endTimestamp = getStoredEndTimestamp();
+if (!endTimestamp) {
+  endTimestamp = Date.now() + DEFAULT_DURATION * 1000;
+  setStoredEndTimestamp(endTimestamp);
+}
+
+function getRemainingSeconds() {
+  return Math.max(0, Math.ceil((endTimestamp - Date.now()) / 1000));
+}
+
+let countdownDuration = getRemainingSeconds();
+const TOTAL_SECONDS = DEFAULT_DURATION;
 
 // Elements
 const timerElement = document.getElementById('timer');
@@ -25,6 +45,20 @@ const fadeScreen = document.getElementById('fade-screen');
 const preChecklist = document.getElementById('pre-upload-checklist');
 const langEnBtn = document.getElementById('lang-en');
 const langDeBtn = document.getElementById('lang-de');
+
+// Main/content element that should be blurred when modals are visible
+const mainContent = document.querySelector('main') || document.body;
+
+// Helper to update background blur state based on whether any modal/overlay/backdrop is active
+function updateBlurState() {
+  const modalVisible = !!document.querySelector('.modal-overlay.is-visible');
+  const uploadVisible = !!document.querySelector('.upload-overlay.is-visible');
+  const fadeActive = !!document.querySelector('.fade-screen.fade-in');
+  const shouldBlur = modalVisible || uploadVisible || fadeActive;
+  if (!mainContent) return;
+  if (shouldBlur) mainContent.classList.add('blurred-content');
+  else mainContent.classList.remove('blurred-content');
+}
 
 // i18n dictionary
 const DICT = {
@@ -116,12 +150,15 @@ function formatTime(seconds) {
 function showModal() {
   if (modalEl) {
     modalEl.classList.add('is-visible');
+    updateBlurState();
     requestAnimationFrame(() => startOnboardingEffects());
   }
 }
 
 function hideModal() {
   if (modalEl) modalEl.classList.remove('is-visible');
+  // defer update to ensure any other overlays are considered
+  setTimeout(updateBlurState, 8);
 }
 
 if (ackBtn) ackBtn.addEventListener('click', hideModal);
@@ -156,10 +193,12 @@ function startUploadSequence() {
     fadeScreen.setAttribute('aria-hidden', 'false');
     fadeScreen.classList.add('fade-in');
   }
+  updateBlurState();
 
   setTimeout(() => {
     uploadOverlay.classList.add('is-visible');
     uploadOverlay.setAttribute('aria-hidden', 'false');
+    updateBlurState();
     if (warningLightsEl) warningLightsEl.style.display = 'none';
 
     uploadTargets.forEach((item, idx) => {
@@ -191,6 +230,8 @@ function startUploadSequence() {
         fadeScreen.classList.remove('fade-in');
         fadeScreen.setAttribute('aria-hidden', 'true');
       }
+      // update blur after fade-screen removed
+      setTimeout(updateBlurState, 8);
     });
   }, 500);
 }
@@ -308,13 +349,15 @@ function typeLines(el, lines, charDelay = 18, lineDelay = 250) {
 updateTimersDisplay(countdownDuration);
 
 const countdownInterval = setInterval(() => {
+  // recompute remaining seconds from stored end timestamp to keep accurate across tabs/reloads
+  countdownDuration = getRemainingSeconds();
   if (countdownDuration <= 0) {
     clearInterval(countdownInterval);
     updateTimersDisplay(0);
+    clearStoredEndTimestamp();
     startUploadSequence();
   } else {
     updateTimersDisplay(countdownDuration);
-    countdownDuration--;
   }
 }, 1000);
 
