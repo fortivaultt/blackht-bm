@@ -75,7 +75,8 @@ const DICT = {
     modalLines: ['Connecting to BerlinNet Provider (fiktiv)…', 'Authenticating route… OK', 'Establishing secure tunnel… OK'],
     identityTitle: 'Provided details',
     nameLabel: 'Name:',
-    addressLabel: 'Address:'
+    addressLabel: 'Address:',
+    idLabel: 'Photo ID:'
   },
   de: {
     connecting: 'Verbinde mit Servern…',
@@ -90,7 +91,8 @@ const DICT = {
     modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK'],
     identityTitle: 'Angegebene Details',
     nameLabel: 'Name:',
-    addressLabel: 'Adresse:'
+    addressLabel: 'Adresse:',
+    idLabel: 'Foto-ID:'
   }
 };
 
@@ -132,6 +134,16 @@ function updateLanguage(lang) {
   if (idName) idName.textContent = dict.nameLabel || 'Name:';
   const idAddr = document.getElementById('identity-address-label');
   if (idAddr) idAddr.textContent = dict.addressLabel || 'Address:';
+
+  // summary (page body) labels
+  const sumTitle = document.getElementById('summary-identity-title');
+  if (sumTitle) sumTitle.textContent = dict.identityTitle || 'Provided details';
+  const sumNameLabel = document.getElementById('summary-name-label');
+  if (sumNameLabel) sumNameLabel.textContent = dict.nameLabel || 'Name:';
+  const sumAddrLabel = document.getElementById('summary-address-label');
+  if (sumAddrLabel) sumAddrLabel.textContent = dict.addressLabel || 'Address:';
+  const sumIdLabel = document.getElementById('summary-id-label');
+  if (sumIdLabel) sumIdLabel.textContent = dict.idLabel || 'Photo ID:';
 }
 
 if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
