@@ -80,21 +80,24 @@ function updateBlurState() {
 
 // i18n dictionary
 const DICT = {
-  de: {
-    connecting: 'Verbinde mit Servern…',
-    preparing: 'Bereite Bundles vor…',
-    awaiting: 'Warte auf Startsequenz…',
-    preChecklistTitle: 'Vor dem Upload prüfen',
-    warningTitle: 'Geplanter automatischer Upload',
-    warningNotice: 'Warnung: Alle Bilder und Videos auf dieser Seite werden nach Ende des Countdowns automatisch hochgeladen.',
-    publishing: 'Veröffentliche im offenen Internet…',
-    completeLabel: '✅ Timer abgeschlossen — Inhalts-Upload',
-    acknowledge: 'Verstanden',
-    modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK'],
-    identityTitle: 'Angegebene Details',
+  en: {
+    connecting: 'Connecting to servers…',
+    preparing: 'Preparing bundles…',
+    awaiting: 'Waiting for start sequence…',
+    preChecklistTitle: 'Pre-upload checklist',
+    warningTitle: 'Planned Automatic Upload',
+    warningNotice: 'Warning: All images and videos on this page will be automatically uploaded when the countdown ends.',
+    publishing: 'Publishing to the open Internet…',
+    completeLabel: '✅ Timer complete — Content upload',
+    acknowledge: 'Understood',
+    modalLines: ['Connecting to BerlinNet provider (simulated)…', 'Authenticating route… OK', 'Secure connection being established… OK'],
+    identityTitle: 'Identity Details',
     nameLabel: 'Name:',
-    addressLabel: 'Adresse:',
-    idLabel: 'Foto-ID:'
+    addressLabel: 'Address:',
+    idLabel: 'Photo ID:',
+    connected: 'Connected',
+    bundlesComplete: 'Bundles compiled',
+    uploadComplete: 'Upload complete — contents are live (simulation)'
   }
 };
 
