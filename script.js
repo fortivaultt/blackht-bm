@@ -126,7 +126,14 @@ function updateLanguage(lang) {
   document.querySelectorAll('#content-label').forEach(e => e.textContent = dict.completeLabel);
   document.querySelectorAll('.modal-button').forEach(b => { if (b) b.textContent = dict.acknowledge; });
   if (modalEl) modalEl.querySelector('#upload-warning-title').textContent = dict.warningTitle;
-  if (modalEl) modalEl.querySelector('#warning-paragraph').textContent = dict.warningNotice;
+  if (modalEl) {
+    const p = modalEl.querySelector('#warning-paragraph');
+    if (p) {
+      const notice = String(dict.warningNotice || '');
+      const clean = notice.replace(/^\s*Warning:\s*/i, '');
+      p.innerHTML = '<strong>Warning:</strong> ' + clean;
+    }
+  }
 
   const idTitle = document.getElementById('identity-title');
   if (idTitle) idTitle.textContent = dict.identityTitle;
