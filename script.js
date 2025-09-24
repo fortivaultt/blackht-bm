@@ -80,22 +80,6 @@ function updateBlurState() {
 
 // i18n dictionary
 const DICT = {
-  en: {
-    connecting: 'Connecting to servers…',
-    preparing: 'Preparing bundles…',
-    awaiting: 'Awaiting launch sequence…',
-    preChecklistTitle: 'Pre-upload checklist',
-    warningTitle: 'Scheduled Automatic Upload',
-    warningNotice: 'Warning: All images and videos on this site are scheduled to be automatically uploaded when the countdown ends.',
-    publishing: 'Publishing to the open internet…',
-    completeLabel: '✅ Simulation complete — Content Upload (Inhalts-Upload)',
-    acknowledge: 'I understand',
-    modalLines: ['Connecting to BerlinNet Provider (fiktiv)…', 'Authenticating route… OK', 'Establishing secure tunnel… OK'],
-    identityTitle: 'Provided details',
-    nameLabel: 'Name:',
-    addressLabel: 'Address:',
-    idLabel: 'Photo ID:'
-  },
   de: {
     connecting: 'Verbinde mit Servern…',
     preparing: 'Bereite Bundles vor…',
@@ -104,7 +88,7 @@ const DICT = {
     warningTitle: 'Geplanter automatischer Upload',
     warningNotice: 'Warnung: Alle Bilder und Videos auf dieser Seite werden nach Ende des Countdowns automatisch hochgeladen.',
     publishing: 'Veröffentliche im offenen Internet…',
-    completeLabel: '✅ Simulation abgeschlossen �� Inhalts-Upload',
+    completeLabel: '✅ Timer abgeschlossen — Inhalts-Upload',
     acknowledge: 'Verstanden',
     modalLines: ['Verbinde mit BerlinNet Provider (fiktiv)…', 'Authentifiziere Route… OK', 'Sichere Verbindung wird hergestellt… OK'],
     identityTitle: 'Angegebene Details',
@@ -114,30 +98,25 @@ const DICT = {
   }
 };
 
-let currentLang = (function(){
-  const stored = localStorage.getItem('site_lang');
-  if (stored) return stored;
-  const nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
-  return nav.toLowerCase().startsWith('de') ? 'de' : 'en';
-})();
+let currentLang = 'de';
 
 function setLangButtons() {
   [langEnBtn, langDeBtn].forEach(b => { if (!b) return; b.setAttribute('aria-pressed', b.dataset.lang === currentLang ? 'true' : 'false'); });
 }
 
 function updateLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem('site_lang', lang);
+  currentLang = 'de';
+  localStorage.setItem('site_lang', 'de');
   setLangButtons();
 
-  const dict = DICT[lang] || DICT.en;
+  const dict = DICT['de'];
   // update connecting texts
   document.querySelectorAll('.checklist-item').forEach(el => {
     const key = el.dataset.key;
     const textEl = el.querySelector('.check-text');
     if (textEl && dict[key]) textEl.textContent = dict[key];
   });
-  document.querySelectorAll('.checklist-title').forEach(e => e.textContent = dict.preChecklistTitle || 'Pre-upload checklist');
+  document.querySelectorAll('.checklist-title').forEach(e => e.textContent = dict.preChecklistTitle);
   if (connectTextEl) connectTextEl.textContent = dict.connecting;
   if (connectStatusEl) connectStatusEl.textContent = dict.connecting;
   document.querySelectorAll('.upload-title').forEach(e => e.textContent = dict.publishing);
@@ -147,28 +126,29 @@ function updateLanguage(lang) {
   if (modalEl) modalEl.querySelector('#warning-paragraph').textContent = dict.warningNotice;
 
   const idTitle = document.getElementById('identity-title');
-  if (idTitle) idTitle.textContent = dict.identityTitle || 'Provided details';
+  if (idTitle) idTitle.textContent = dict.identityTitle;
   const idName = document.getElementById('identity-name-label');
-  if (idName) idName.textContent = dict.nameLabel || 'Name:';
+  if (idName) idName.textContent = dict.nameLabel;
   const idAddr = document.getElementById('identity-address-label');
-  if (idAddr) idAddr.textContent = dict.addressLabel || 'Address:';
+  if (idAddr) idAddr.textContent = dict.addressLabel;
 
   // summary (page body) labels
   const sumTitle = document.getElementById('summary-identity-title');
-  if (sumTitle) sumTitle.textContent = dict.identityTitle || 'Provided details';
+  if (sumTitle) sumTitle.textContent = dict.identityTitle;
   const sumNameLabel = document.getElementById('summary-name-label');
-  if (sumNameLabel) sumNameLabel.textContent = dict.nameLabel || 'Name:';
+  if (sumNameLabel) sumNameLabel.textContent = dict.nameLabel;
   const sumAddrLabel = document.getElementById('summary-address-label');
-  if (sumAddrLabel) sumAddrLabel.textContent = dict.addressLabel || 'Address:';
+  if (sumAddrLabel) sumAddrLabel.textContent = dict.addressLabel;
   const sumIdLabel = document.getElementById('summary-id-label');
-  if (sumIdLabel) sumIdLabel.textContent = dict.idLabel || 'Photo ID:';
+  if (sumIdLabel) sumIdLabel.textContent = dict.idLabel;
 }
 
-if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
+// No language switch listeners (kept for safety if elements exist)
+if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('de'));
 if (langDeBtn) langDeBtn.addEventListener('click', () => updateLanguage('de'));
 
 // Initialize language
-updateLanguage(currentLang);
+updateLanguage('de');
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -198,7 +178,7 @@ function startOnboardingEffects() {
   if (card) {
     card.classList.add('attention');
     card.style.animation = (card.style.animation ? card.style.animation + ', ' : '') + 'jiggle 0.6s ease-out';
-    setTimeout(() => { if (card) card.style.animation = card.style.animation.replace(/,?\s*jiggle[^,]*/,''); }, 700);
+    setTimeout(() => { if (card) card.style.animation = card.style.animation.replace(/,?\s*jiggle[^,]*/, ''); }, 700);
   }
 
   if (modalProgressBarEl) {
@@ -211,7 +191,7 @@ function startOnboardingEffects() {
     }, 180);
   }
 
-  const dict = DICT[currentLang] || DICT.en;
+  const dict = DICT[currentLang] || DICT.de;
   const lines = dict.modalLines;
   typeLines(modalTyperEl, lines, 16, 320);
 }
@@ -247,13 +227,16 @@ function startUploadSequence() {
     }, 200);
 
     // console typing & globe pulse
-    const dict = DICT[currentLang] || DICT.en;
-    const lines = [dict.modalLines[0], 'Resolving DNS… OK', 'TLS handshake… OK', 'Transfer channels open… OK'];
+    const dict = DICT[currentLang] || DICT.de;
+    const extraLines = (currentLang === 'de')
+      ? ['DNS wird aufgelöst… OK', 'TLS-Handshake… OK', 'Übertragungskanäle geöffnet… OK']
+      : ['Resolving DNS… OK', 'TLS handshake… OK', 'Transfer channels open… OK'];
+    const lines = [dict.modalLines[0], ...extraLines];
     typeLines(terminalEl, lines, 14, 180).then(() => {
       if (uploadCompleteEl) {
         uploadCompleteEl.hidden = false;
         uploadCompleteEl.classList.add('show');
-        uploadCompleteEl.textContent = (currentLang === 'de') ? 'Upload abgeschlossen – Inhalte sind live (Simulation)' : 'Upload complete – content is live (simulation)';
+        uploadCompleteEl.textContent = 'Upload abgeschlossen – Inhalte sind live (Simulation)';
       }
       if (contentUploadEl) contentUploadEl.hidden = false;
       if (fadeScreen) {
@@ -296,13 +279,10 @@ function runChecklistSequence() {
 
   // CONNECTING -> Connected -> fade away
   if (items.connecting) {
-    const icon = items.connecting.querySelector('.check-icon');
     const textEl = items.connecting.querySelector('.check-text');
-    // start as connecting (already set)
     setTimeout(() => {
-      if (textEl) textEl.textContent = (currentLang === 'de') ? 'Verbunden' : 'Connected';
+      if (textEl) textEl.textContent = 'Verbunden';
       markComplete(items.connecting);
-      // fade out after brief delay
       setTimeout(() => items.connecting.classList.add('fade-away'), 1200);
     }, 2400);
   }
@@ -310,39 +290,35 @@ function runChecklistSequence() {
   // PREPARING -> Bundles compiled -> fade away
   if (items.preparing) {
     const textEl = items.preparing.querySelector('.check-text');
-    // ensure preparing label shows immediately then complete
     setTimeout(() => {
-      if (textEl) textEl.textContent = DICT[currentLang].preparing || DICT.en.preparing;
+      if (textEl) textEl.textContent = DICT[currentLang].preparing;
     }, 300);
 
     setTimeout(() => {
-      if (textEl) textEl.textContent = (currentLang === 'de') ? 'Bundles abgeschlossen' : 'Bundles compiled';
+      if (textEl) textEl.textContent = 'Bundles abgeschlossen';
       markComplete(items.preparing);
       setTimeout(() => items.preparing.classList.add('fade-away'), 1200);
     }, 4200);
   }
 
-  // Ensure awaiting remains visible and pulsing (no action needed)
+  // awaiting stays visible
 }
 
 (function decorateChecklist(){
   const icons = document.querySelectorAll('.check-icon');
   icons.forEach(i => i.classList.add('animated-icon'));
-  // kick off sequence
   runChecklistSequence();
 })();
 
-// Flashing connecting text toggles EN/DE quickly for realism but language switch overrides
+// Connecting text ticker (German only)
 (function startConnectingTicker(){
   let t = 0;
   setInterval(() => {
     t++;
     const dots = '.'.repeat(t % 4);
-    const en = `${DICT.en.connecting}${dots}`;
     const de = `${DICT.de.connecting}${dots}`;
-    const text = (t % 8 < 4) ? en : de;
-    if (connectTextEl && !document.hidden) connectTextEl.textContent = text;
-    if (connectStatusEl && !document.hidden) connectStatusEl.textContent = text;
+    if (connectTextEl && !document.hidden) connectTextEl.textContent = de;
+    if (connectStatusEl && !document.hidden) connectStatusEl.textContent = de;
   }, 600);
 })();
 
@@ -381,7 +357,6 @@ function startCountdownLoop() {
   updateTimersDisplay(countdownDuration);
 
   const countdownInterval = setInterval(() => {
-    // recompute remaining seconds from stored end timestamp to keep accurate across tabs/reloads
     countdownDuration = getRemainingSeconds();
     if (countdownDuration <= 0) {
       clearInterval(countdownInterval);
@@ -419,11 +394,9 @@ setLangButtons();
     endTimestamp = serverTs;
     setStoredEndTimestamp(endTimestamp);
   } else {
-    // server unreachable — fall back to local storage or create a local countdown
     endTimestamp = computeLocalEndTimestamp();
   }
 
-  // start the countdown loop and show modal
   startCountdownLoop();
   showModal();
 })();
