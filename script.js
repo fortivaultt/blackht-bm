@@ -317,9 +317,9 @@ function runChecklistSequence() {
   setInterval(() => {
     t++;
     const dots = '.'.repeat(t % 4);
-    const de = `${DICT.de.connecting}${dots}`;
-    if (connectTextEl && !document.hidden) connectTextEl.textContent = de;
-    if (connectStatusEl && !document.hidden) connectStatusEl.textContent = de;
+    const text = `${(DICT[currentLang] || DICT.en).connecting}${dots}`;
+    if (connectTextEl && !document.hidden) connectTextEl.textContent = text;
+    if (connectStatusEl && !document.hidden) connectStatusEl.textContent = text;
   }, 600);
 })();
 
