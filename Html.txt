@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>FortiVault Media Vault</h1>
+        <h1>Germanvault Live Media Uploader</h1>
     </header>
     
     <section id="media-gallery">
@@ -16,7 +16,7 @@
         <div class="gallery">
             <!-- Video 1 (ScreenPal Embed) -->
             <div class="video-container">
-                <div class="sp-embed-player" data-id="cTQqc8nDc9j">
+  ��             <div class="sp-embed-player" data-id="cTQqc8nDc9j">
                     <iframe width="100%" height="100%" style="border:0;" scrolling="no" src="https://go.screenpal.com/player/cTQqc8nDc9j?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe>
                 </div>
             </div>
