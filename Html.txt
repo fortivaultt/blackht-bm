@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>My Video and Photo Gallery</h1>
+        <h1>FortiVault Media Vault</h1>
     </header>
     
     <section id="media-gallery">
