@@ -108,11 +108,11 @@ function setLangButtons() {
 }
 
 function updateLanguage(lang) {
-  currentLang = 'de';
-  localStorage.setItem('site_lang', 'de');
+  currentLang = (lang === 'en') ? 'en' : 'en';
+  localStorage.setItem('site_lang', currentLang);
   setLangButtons();
 
-  const dict = DICT['de'];
+  const dict = DICT[currentLang] || DICT.en;
   // update connecting texts
   document.querySelectorAll('.checklist-item').forEach(el => {
     const key = el.dataset.key;
