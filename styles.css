@@ -167,6 +167,13 @@ header.site-header {
   .identity-photo-wrapper { width: 100%; flex: 0 0 auto; }
   .identity-photo { height: 180px; object-fit: cover; }
   .identity-summary { padding: 12px; }
+
+  /* Modal sizing tweaks for small screens */
+  .modal-card { width: 94vw; max-height: 82vh; }
+  .modal-body { max-height: calc(82vh - 120px); overflow-y: auto; }
+  .modal-header, .modal-actions { padding: 12px 14px; }
+  .modal-button { padding: 8px 12px; }
+  .modal-body p { margin: 0 0 10px; font-size: 14px; }
 }
 
 /* Background blur when modals are visible */
