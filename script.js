@@ -147,11 +147,11 @@ function updateLanguage(lang) {
 }
 
 // No language switch listeners (kept for safety if elements exist)
-if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('de'));
-if (langDeBtn) langDeBtn.addEventListener('click', () => updateLanguage('de'));
+if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
+if (langDeBtn) langDeBtn.addEventListener('click', () => updateLanguage('en'));
 
 // Initialize language
-updateLanguage('de');
+updateLanguage('en');
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
