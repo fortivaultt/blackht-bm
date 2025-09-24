@@ -282,7 +282,7 @@ function runChecklistSequence() {
   if (items.connecting) {
     const textEl = items.connecting.querySelector('.check-text');
     setTimeout(() => {
-      if (textEl) textEl.textContent = 'Verbunden';
+      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.en).connected;
       markComplete(items.connecting);
       setTimeout(() => items.connecting.classList.add('fade-away'), 1200);
     }, 2400);
