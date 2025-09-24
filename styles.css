@@ -132,6 +132,20 @@ header.site-header {
 .fade-screen { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 280ms ease; z-index: 995; }
 .fade-screen.fade-in { opacity: 1; pointer-events: auto; }
 
+/* Takedown contact section */
+.takedown-contact { margin-top: 20px; padding: 16px; border-radius: 12px; background: linear-gradient(180deg,#071026,#081426); border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 32px rgba(0,0,0,0.65); border-left: 4px solid rgba(255,140,66,0.14); }
+.takedown-contact h2 { margin: 0 0 10px; color: #aee7ff; font-weight: 800; font-size: 18px; text-shadow: 0 1px 8px rgba(30,144,255,0.06); }
+.takedown-card { padding: 12px 14px; border-radius: 10px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,140,66,0.06); box-shadow: 0 6px 18px rgba(255,140,66,0.03); }
+.takedown-row { display: flex; align-items: baseline; gap: 8px; margin: 8px 0; color: #dbeeff; }
+.takedown-key { min-width: 150px; font-weight: 700; color: #eaf8ff; }
+.takedown-value { color: #dff2ff; font-weight: 600; }
+.takedown-amount .takedown-value { color: #ff8c42; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px rgba(255,140,66,0.08); }
+.takedown-note { margin-top: 8px; color: #9fbbe8; font-style: italic; }
+.email-link { color: #9fe0ff; text-decoration: none; font-weight: 700; }
+.email-link:hover { text-decoration: underline; }
+
+@media (max-width: 480px) { .takedown-contact { padding: 12px; } .takedown-key { min-width: 120px; } }
+
 /* Footer */
 .professional-footer { margin-top: 36px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 18px; color: #cfeeff; }
 .footer-grid { display: flex; gap: 24px; flex-wrap: wrap; }
