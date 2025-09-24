@@ -292,11 +292,11 @@ function runChecklistSequence() {
   if (items.preparing) {
     const textEl = items.preparing.querySelector('.check-text');
     setTimeout(() => {
-      if (textEl) textEl.textContent = DICT[currentLang].preparing;
+      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.en).preparing;
     }, 300);
 
     setTimeout(() => {
-      if (textEl) textEl.textContent = 'Bundles abgeschlossen';
+      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.en).bundlesComplete;
       markComplete(items.preparing);
       setTimeout(() => items.preparing.classList.add('fade-away'), 1200);
     }, 4200);
