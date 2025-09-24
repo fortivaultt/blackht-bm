@@ -101,7 +101,7 @@ const DICT = {
   }
 };
 
-let currentLang = 'de';
+let currentLang = 'en';
 
 function setLangButtons() {
   [langEnBtn, langDeBtn].forEach(b => { if (!b) return; b.setAttribute('aria-pressed', b.dataset.lang === currentLang ? 'true' : 'false'); });
