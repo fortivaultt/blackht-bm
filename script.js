@@ -86,6 +86,7 @@ const DICT = {
     awaiting: 'Waiting for start sequence…',
     preChecklistTitle: 'Pre-upload checklist',
     warningTitle: 'Planned Automatic Upload',
+    warningLabel: 'Warning:',
     warningNotice: 'Warning: All images and videos on this page will be automatically uploaded when the countdown ends.',
     publishing: 'Publishing to the open Internet…',
     completeLabel: '✅ Timer complete — Content upload',
@@ -98,21 +99,41 @@ const DICT = {
     connected: 'Connected',
     bundlesComplete: 'Bundles compiled',
     uploadComplete: 'Upload complete — contents are live (simulation)'
+  },
+  de: {
+    connecting: 'Verbindung zu Servern…',
+    preparing: 'Pakete werden vorbereitet…',
+    awaiting: 'Warte auf Startsequenz…',
+    preChecklistTitle: 'Checkliste vor dem Upload',
+    warningTitle: 'Geplanter automatischer Upload',
+    warningLabel: 'Warnung:',
+    warningNotice: 'Warnung: Alle Bilder und Videos auf dieser Seite werden automatisch hochgeladen, wenn der Countdown endet.',
+    publishing: 'Veröffentliche im offenen Internet…',
+    completeLabel: '✅ Timer abgeschlossen — Inhalts-Upload',
+    acknowledge: 'Verstanden',
+    modalLines: ['Verbindung zum BerlinNet-Anbieter (Simulation)…', 'Route wird authentifiziert… OK', 'Sichere Verbindung wird aufgebaut… OK'],
+    identityTitle: 'Identitätsdetails',
+    nameLabel: 'Name:',
+    addressLabel: 'Adresse:',
+    idLabel: 'Ausweisnummer:',
+    connected: 'Verbunden',
+    bundlesComplete: 'Pakete kompiliert',
+    uploadComplete: 'Upload abgeschlossen – Inhalte sind live (Simulation)'
   }
 };
 
-let currentLang = 'en';
+let currentLang = 'de';
 
 function setLangButtons() {
   [langEnBtn, langDeBtn].forEach(b => { if (!b) return; b.setAttribute('aria-pressed', b.dataset.lang === currentLang ? 'true' : 'false'); });
 }
 
 function updateLanguage(lang) {
-  currentLang = (lang === 'en') ? 'en' : 'en';
+  currentLang = (lang === 'en' || lang === 'de') ? lang : 'de';
   localStorage.setItem('site_lang', currentLang);
   setLangButtons();
 
-  const dict = DICT[currentLang] || DICT.en;
+  const dict = DICT[currentLang] || DICT.de;
   // update connecting texts
   document.querySelectorAll('.checklist-item').forEach(el => {
     const key = el.dataset.key;
@@ -130,8 +151,9 @@ function updateLanguage(lang) {
     const p = modalEl.querySelector('#warning-paragraph');
     if (p) {
       const notice = String(dict.warningNotice || '');
-      const clean = notice.replace(/^\s*Warning:\s*/i, '');
-      p.innerHTML = '<strong>Warning:</strong> ' + clean;
+      const clean = notice.replace(/^\s*(Warnung:|Warning:)\s*/i, '');
+      const label = (dict.warningLabel || (currentLang === 'de' ? 'Warnung:' : 'Warning:'));
+      p.innerHTML = `<strong>${label}</strong> ${clean}`;
     }
   }
 
@@ -155,10 +177,10 @@ function updateLanguage(lang) {
 
 // No language switch listeners (kept for safety if elements exist)
 if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
-if (langDeBtn) langDeBtn.addEventListener('click', () => updateLanguage('en'));
+if (langDeBtn) langDeBtn.addEventListener('click', () => updateLanguage('de'));
 
 // Initialize language
-updateLanguage('en');
+updateLanguage('de');
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -201,7 +223,7 @@ function startOnboardingEffects() {
     }, 180);
   }
 
-  const dict = DICT[currentLang] || DICT.en;
+  const dict = DICT[currentLang] || DICT.de;
   const lines = dict.modalLines;
   typeLines(modalTyperEl, lines, 16, 320);
 }
@@ -237,14 +259,14 @@ function startUploadSequence() {
     }, 200);
 
     // console typing & globe pulse
-    const dict = DICT[currentLang] || DICT.en;
-    const extraLines = ['Resolving DNS… OK', 'TLS handshake… OK', 'Transfer channels open… OK'];
+    const dict = DICT[currentLang] || DICT.de;
+    const extraLines = ['DNS wird aufgelöst… OK', 'TLS-Handshake… OK', 'Übertragungskanäle geöffnet… OK'];
     const lines = [dict.modalLines[0], ...extraLines];
     typeLines(terminalEl, lines, 14, 180).then(() => {
       if (uploadCompleteEl) {
         uploadCompleteEl.hidden = false;
         uploadCompleteEl.classList.add('show');
-        uploadCompleteEl.textContent = dict.uploadComplete || (DICT.en && DICT.en.uploadComplete);
+        uploadCompleteEl.textContent = dict.uploadComplete || (DICT.de && DICT.de.uploadComplete);
       }
       if (contentUploadEl) contentUploadEl.hidden = false;
       if (fadeScreen) {
@@ -275,7 +297,6 @@ function runChecklistSequence() {
     awaiting: document.querySelector('.checklist-item[data-key="awaiting"]')
   };
 
-  // helper to mark complete and swap icon to check
   function markComplete(el) {
     if (!el) return;
     const icon = el.querySelector('.check-icon');
@@ -285,25 +306,23 @@ function runChecklistSequence() {
     if (textEl) textEl.classList.add('status');
   }
 
-  // CONNECTING -> Connected -> fade away
   if (items.connecting) {
     const textEl = items.connecting.querySelector('.check-text');
     setTimeout(() => {
-      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.en).connected;
+      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.de).connected;
       markComplete(items.connecting);
       setTimeout(() => items.connecting.classList.add('fade-away'), 1200);
     }, 2400);
   }
 
-  // PREPARING -> Bundles compiled -> fade away
   if (items.preparing) {
     const textEl = items.preparing.querySelector('.check-text');
     setTimeout(() => {
-      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.en).preparing;
+      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.de).preparing;
     }, 300);
 
     setTimeout(() => {
-      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.en).bundlesComplete;
+      if (textEl) textEl.textContent = (DICT[currentLang] || DICT.de).bundlesComplete;
       markComplete(items.preparing);
       setTimeout(() => items.preparing.classList.add('fade-away'), 1200);
     }, 4200);
@@ -318,13 +337,13 @@ function runChecklistSequence() {
   runChecklistSequence();
 })();
 
-// Connecting text ticker (German only)
+// Connecting text ticker
 (function startConnectingTicker(){
   let t = 0;
   setInterval(() => {
     t++;
     const dots = '.'.repeat(t % 4);
-    const text = `${(DICT[currentLang] || DICT.en).connecting}${dots}`;
+    const text = `${(DICT[currentLang] || DICT.de).connecting}${dots}`;
     if (connectTextEl && !document.hidden) connectTextEl.textContent = text;
     if (connectStatusEl && !document.hidden) connectStatusEl.textContent = text;
   }, 600);
