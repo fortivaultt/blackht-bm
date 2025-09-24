@@ -230,16 +230,14 @@ function startUploadSequence() {
     }, 200);
 
     // console typing & globe pulse
-    const dict = DICT[currentLang] || DICT.de;
-    const extraLines = (currentLang === 'de')
-      ? ['DNS wird aufgelöst… OK', 'TLS-Handshake… OK', 'Übertragungskanäle geöffnet… OK']
-      : ['Resolving DNS… OK', 'TLS handshake… OK', 'Transfer channels open… OK'];
+    const dict = DICT[currentLang] || DICT.en;
+    const extraLines = ['Resolving DNS… OK', 'TLS handshake… OK', 'Transfer channels open… OK'];
     const lines = [dict.modalLines[0], ...extraLines];
     typeLines(terminalEl, lines, 14, 180).then(() => {
       if (uploadCompleteEl) {
         uploadCompleteEl.hidden = false;
         uploadCompleteEl.classList.add('show');
-        uploadCompleteEl.textContent = 'Upload abgeschlossen – Inhalte sind live (Simulation)';
+        uploadCompleteEl.textContent = dict.uploadComplete || (DICT.en && DICT.en.uploadComplete);
       }
       if (contentUploadEl) contentUploadEl.hidden = false;
       if (fadeScreen) {
