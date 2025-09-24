@@ -194,7 +194,7 @@ function startOnboardingEffects() {
     }, 180);
   }
 
-  const dict = DICT[currentLang] || DICT.de;
+  const dict = DICT[currentLang] || DICT.en;
   const lines = dict.modalLines;
   typeLines(modalTyperEl, lines, 16, 320);
 }
