@@ -241,10 +241,12 @@ const server = http.createServer((req, res) => {
       return send(res, 405, 'Method Not Allowed');
     }
 
-    // Protected admin route: only serve admin UI if ADMIN_KEY env matches ?key= param
-    if (urlPath === '/admin') {
-      const reqUrl = new URL(req.url, `http://${req.headers.host}`);
-      const provided = reqUrl.searchParams.get('key') || '';
+    // Protected admin route: only serve admin UI if ADMIN_KEY env matches ?key= param or x-admin-key header
+    if (urlPath === '/admin' || urlPath === '/admin/') {
+      const reqUrl = (function(){ try { return new URL(req.url, `http://${req.headers.host}`); } catch (e) { return null; }})();
+      const providedQuery = reqUrl ? (reqUrl.searchParams.get('key') || '') : '';
+      const providedHeader = (req.headers['x-admin-key'] || '').toString();
+      const provided = providedQuery || providedHeader || '';
       const ADMIN_KEY = process.env.ADMIN_KEY || '';
       if (!ADMIN_KEY || !provided || provided !== ADMIN_KEY) {
         // hide presence of admin panel from public
