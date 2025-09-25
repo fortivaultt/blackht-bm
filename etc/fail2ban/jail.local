@@ -1,0 +1,30 @@
+[DEFAULT]
+# Ban settings
+bantime  = 1h
+findtime = 10m
+maxretry = 5
+backend  = auto
+ignoreip = 127.0.0.1/8 ::1
+
+[sshd]
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 5
+
+[nginx-http-auth]
+enabled = true
+filter = nginx-http-auth
+port = http,https
+logpath = /var/log/nginx/error.log
+maxretry = 5
+
+[nginx-req-limit]
+enabled  = true
+filter   = nginx-req-limit
+action   = iptables[name=NGINX-REQ, port=http, protocol=tcp]
+logpath  = /var/log/nginx/access.log
+maxretry = 30
+findtime = 60
+bantime  = 3600
