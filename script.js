@@ -10,6 +10,7 @@ function setStoredEndTimestamp(ts) { localStorage.setItem('countdown_end', Strin
 function clearStoredEndTimestamp() { localStorage.removeItem('countdown_end'); }
 
 let endTimestamp = null;
+let countdownIntervalId = null;
 
 async function fetchServerEndTimestamp() {
   try {
@@ -228,6 +229,33 @@ function startOnboardingEffects() {
   typeLines(modalTyperEl, lines, 16, 320);
 }
 
+function resetUploadUI() {
+  if (uploadOverlay) {
+    uploadOverlay.classList.remove('is-visible');
+    uploadOverlay.setAttribute('aria-hidden', 'true');
+  }
+  if (fadeScreen) {
+    fadeScreen.classList.remove('fade-in');
+    fadeScreen.setAttribute('aria-hidden', 'true');
+  }
+  if (uploadCompleteEl) {
+    uploadCompleteEl.hidden = true;
+    uploadCompleteEl.classList.remove('show');
+    uploadCompleteEl.textContent = '';
+  }
+  if (contentUploadEl) contentUploadEl.hidden = true;
+  if (masterBarEl) masterBarEl.style.width = '0%';
+  document.querySelectorAll('.upload-target').forEach(item => {
+    item.classList.remove('active');
+    item.classList.remove('complete');
+    const bar = item.querySelector('.bar');
+    if (bar) bar.style.width = '0%';
+  });
+  if (countdownBarEl) countdownBarEl.style.width = '0%';
+  if (warningLightsEl) warningLightsEl.style.display = '';
+  updateBlurState();
+}
+
 function startUploadSequence() {
   if (!uploadOverlay) return;
   // Fade to black, then show upload overlay with modal console
@@ -379,14 +407,18 @@ function typeLines(el, lines, charDelay = 18, lineDelay = 250) {
 }
 
 function startCountdownLoop() {
+  if (countdownIntervalId) {
+    clearInterval(countdownIntervalId);
+    countdownIntervalId = null;
+  }
   // Initialize displays
   countdownDuration = getRemainingSeconds();
   updateTimersDisplay(countdownDuration);
 
-  const countdownInterval = setInterval(() => {
+  countdownIntervalId = setInterval(() => {
     countdownDuration = getRemainingSeconds();
     if (countdownDuration <= 0) {
-      clearInterval(countdownInterval);
+      clearInterval(countdownIntervalId);
       updateTimersDisplay(0);
       clearStoredEndTimestamp();
       startUploadSequence();
@@ -395,6 +427,35 @@ function startCountdownLoop() {
     }
   }, 1000);
 }
+
+async function restartCountdown() {
+  try {
+    const res = await fetch('/api/countdown', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reset: true })
+    });
+    if (!res.ok) throw new Error('Failed to reset');
+    const data = await res.json();
+    if (data && typeof data.endTimestamp === 'number') {
+      endTimestamp = data.endTimestamp;
+      setStoredEndTimestamp(endTimestamp);
+      resetUploadUI();
+      startCountdownLoop();
+      showModal();
+    }
+  } catch (e) {
+    // fallback: local reset
+    endTimestamp = Date.now() + DEFAULT_DURATION * 1000;
+    setStoredEndTimestamp(endTimestamp);
+    resetUploadUI();
+    startCountdownLoop();
+    showModal();
+  }
+}
+
+const restartBtn = document.getElementById('restart-timer');
+if (restartBtn) restartBtn.addEventListener('click', restartCountdown);
 
 function ensureAutoplay() {
   document.querySelectorAll('.sp-embed-player iframe').forEach((f) => {
@@ -407,9 +468,6 @@ function ensureAutoplay() {
     } catch (e) {}
   });
 }
-
-ensureAutoplay();
-setTimeout(ensureAutoplay, 1200);
 
 // initialize language button states after DOM ready
 setLangButtons();
