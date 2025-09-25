@@ -1,0 +1,16 @@
+body { padding: 20px; background: #061022; color: #e6eef8; font-family: Arial, sans-serif; }
+.admin-root { max-width: 900px; margin: 0 auto; }
+.admin-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+.admin-input { padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); color:#e6eef8; }
+.admin-button { background: linear-gradient(90deg,#ff7a2d,#ff3b30); color:#fff; border:0; border-radius:8px; padding:8px 12px; cursor:pointer; }
+.admin-note { color:#9fbbe8; margin-top:6px; }
+.admin-panel-card { width: min(720px, 96vw); }
+.admin-grid { display: grid; gap: 8px; grid-template-columns: 1fr; }
+.admin-small { padding: 8px 10px; }
+.admin-number { width: 96px; }
+.admin-cancel-button { background: linear-gradient(90deg,#6b7280,#4b5563); box-shadow: none; }
+.admin-section-title { margin: 0 0 6px; color: #aee7ff; }
+
+@media (max-width: 480px) {
+  .admin-number { width: 72px; }
+}
