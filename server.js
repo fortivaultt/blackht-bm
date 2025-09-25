@@ -241,6 +241,115 @@ const server = http.createServer((req, res) => {
       return send(res, 405, 'Method Not Allowed');
     }
 
+    // Protected admin route: only serve admin UI if ADMIN_KEY env matches ?key= param
+    if (urlPath === '/admin') {
+      const reqUrl = new URL(req.url, `http://${req.headers.host}`);
+      const provided = reqUrl.searchParams.get('key') || '';
+      const ADMIN_KEY = process.env.ADMIN_KEY || '';
+      if (!ADMIN_KEY || !provided || provided !== ADMIN_KEY) {
+        // hide presence of admin panel from public
+        return send(res, 404, 'Not Found');
+      }
+
+      // Serve minimal admin UI (inline) — admin JS is only sent when key matches
+      const adminHtml = `<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin — Germanvault</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body { padding: 20px; background: #061022; color: #e6eef8; font-family: Arial, sans-serif; }
+    .admin-root { max-width: 900px; margin: 0 auto; }
+    .admin-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+    .admin-input { padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); color:#e6eef8; }
+    .admin-button { background: linear-gradient(90deg,#ff7a2d,#ff3b30); color:#fff; border:0; border-radius:8px; padding:8px 12px; cursor:pointer; }
+    .admin-note { color:#9fbbe8; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="admin-root">
+    <h1>Admin-Steuerung</h1>
+    <section>
+      <h3>Aktueller Countdown</h3>
+      <div id="current-end" class="admin-note">Lade…</div>
+      <div class="admin-row">
+        <input id="admin-end-datetime" type="datetime-local" class="admin-input" />
+        <button id="admin-set-end" class="admin-button">Setzen</button>
+      </div>
+      <div class="admin-row">
+        <input id="admin-hours" type="number" min="0" placeholder="Stunden" class="admin-input" />
+        <input id="admin-mins" type="number" min="0" max="59" placeholder="Minuten" class="admin-input" />
+        <button id="admin-set-duration" class="admin-button">Anwenden</button>
+      </div>
+      <div class="admin-row">
+        <button id="admin-reset" class="admin-button">Auf 12 Stunden zurücksetzen</button>
+        <button id="admin-refresh" class="admin-button">Aktualisieren</button>
+      </div>
+    </section>
+    <section style="margin-top:18px;">
+      <h3>Hinweis</h3>
+      <div class="admin-note">Diese Seite ist nur sichtbar mit einem geheimen Schlüssel. Teilen Sie den Schlüssel nicht. Wenn Sie den Schlüssel ändern möchten, setzen Sie die Umgebungsvariable ADMIN_KEY und starten Sie den Server neu.</div>
+    </section>
+  </div>
+
+  <script>
+    async function getCurrent() {
+      try {
+        const res = await fetch('/api/countdown', { cache: 'no-store' });
+        if (!res.ok) throw new Error('err');
+        const d = await res.json();
+        return d && d.endTimestamp ? Number(d.endTimestamp) : null;
+      } catch (e) { return null; }
+    }
+    function fmt(ts) { try { const d=new Date(Number(ts)); return d.toLocaleString(); } catch (e) { return String(ts); } }
+    async function refreshDisplay() {
+      const ts = await getCurrent();
+      const el = document.getElementById('current-end');
+      if (!el) return;
+      el.textContent = ts ? fmt(ts) + ' (' + Math.ceil((ts-Date.now())/1000) + 's übrig)' : 'nicht verfügbar';
+      if (ts) {
+        const d = new Date(ts);
+        const iso = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+        document.getElementById('admin-end-datetime').value = iso;
+      }
+    }
+    async function postEnd(ts) {
+      try {
+        const res = await fetch('/api/countdown', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endTimestamp: ts }) });
+        return res.ok;
+      } catch (e) { return false; }
+    }
+    document.getElementById('admin-set-end').addEventListener('click', async () => {
+      const v = document.getElementById('admin-end-datetime').value;
+      if (!v) return alert('Bitte Endzeit wählen');
+      const ts = new Date(v).getTime();
+      if (isNaN(ts) || ts <= Date.now()) return alert('Endzeit muss in der Zukunft liegen');
+      const ok = await postEnd(ts);
+      if (ok) { alert('Gesetzt'); await refreshDisplay(); } else alert('Fehler');
+    });
+    document.getElementById('admin-set-duration').addEventListener('click', async () => {
+      const h = Number(document.getElementById('admin-hours').value || 0);
+      const m = Number(document.getElementById('admin-mins').value || 0);
+      if (isNaN(h) || isNaN(m) || h<0 || m<0) return alert('Ungültig');
+      const ts = Date.now() + (h*3600 + m*60)*1000;
+      const ok = await postEnd(ts);
+      if (ok) { alert('Gesetzt'); await refreshDisplay(); } else alert('Fehler');
+    });
+    document.getElementById('admin-reset').addEventListener('click', async () => {
+      const ok = await fetch('/api/countdown', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reset: true }) });
+      if (ok.ok) { alert('Zurückgesetzt'); await refreshDisplay(); } else alert('Fehler');
+    });
+    document.getElementById('admin-refresh').addEventListener('click', refreshDisplay);
+    refreshDisplay();
+  </script>
+</body>
+</html>`;
+
+      return send(res, 200, adminHtml, { 'Content-Type': 'text/html; charset=utf-8' });
+    }
+
     let filePath = path.join(root, urlPath);
 
     if (urlPath === '/' || urlPath === '') {
