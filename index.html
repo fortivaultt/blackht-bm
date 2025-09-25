@@ -26,7 +26,6 @@
     <h1 class="site-title">Germanvault Medien-Uploader</h1>
     <div class="lang-switch">
       <button id="restart-timer" class="lang-button" aria-label="Timer neu starten">Timer neu starten</button>
-      <button id="open-admin" class="lang-button" aria-label="Admin-Bereich öffnen">Admin</button>
     </div>
   </header>
 
@@ -192,68 +191,6 @@
         <div class="sp-embed-player" data-id="cTQqiJnDVdt">
           <iframe class="embed-frame" scrolling="no" src="https://go.screenpal.com/watch/cTQqiJnDVdt?width=100%&height=100%&ff=1&title=0&autoplay=1&muted=1" allowfullscreen allow="autoplay; fullscreen" title="Inhalts-Upload"></iframe>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Admin Login Modal -->
-  <div id="admin-login-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-login-title" hidden>
-    <div class="modal-card">
-      <div class="modal-header"><h3 id="admin-login-title">Admin Login</h3></div>
-      <div class="modal-body">
-        <label for="admin-password" class="admin-label">Passwort</label>
-        <input id="admin-password" type="password" class="admin-input" autocomplete="new-password" />
-        <div class="modal-actions">
-          <button id="admin-login-btn" class="modal-button">Anmelden</button>
-          <button id="admin-login-cancel" class="modal-button admin-cancel-button">Abbrechen</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Admin Panel -->
-  <div id="admin-panel" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-panel-title" hidden>
-    <div class="modal-card admin-panel-card">
-      <div class="modal-header">
-        <h3 id="admin-panel-title">Admin-Steuerung</h3>
-      </div>
-      <div class="modal-body">
-        <section class="admin-section">
-          <h4 class="admin-section-title">Countdown</h4>
-          <div class="admin-grid">
-            <label class="admin-label">Endzeit (lokal)</label>
-            <input id="admin-end-datetime" type="datetime-local" class="admin-input" />
-            <button id="admin-set-end" class="modal-button admin-small">Setzen</button>
-
-            <label class="admin-label">Dauer (Stunden/Minuten)</label>
-            <div class="admin-row">
-              <input id="admin-duration-hours" type="number" min="0" class="admin-input admin-number" placeholder="Stunden" />
-              <input id="admin-duration-mins" type="number" min="0" max="59" class="admin-input admin-number" placeholder="Minuten" />
-              <button id="admin-set-duration" class="modal-button admin-small">Anwenden</button>
-            </div>
-
-            <div class="admin-row">
-              <button id="admin-reset" class="modal-button">Auf 12 Stunden zurücksetzen</button>
-              <button id="admin-pause" class="modal-button admin-small">Pause</button>
-              <button id="admin-logout" class="modal-button admin-cancel-button">Abmelden</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="admin-section">
-          <h4 class="admin-section-title">Identitätsdetails</h4>
-          <div class="admin-grid">
-            <label class="admin-label">Name</label>
-            <input id="admin-name" class="admin-input" />
-            <label class="admin-label">Adresse</label>
-            <input id="admin-address" class="admin-input" />
-            <label class="admin-label">Ausweisnummer</label>
-            <input id="admin-id" class="admin-input" />
-            <div class="admin-row">
-              <button id="admin-save-identity" class="modal-button">Speichern</button>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   </div>
