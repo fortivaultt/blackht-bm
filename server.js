@@ -226,6 +226,10 @@ const server = http.createServer((req, res) => {
               writeCountdownToDisk(ts);
               return send(res, 200, JSON.stringify({ endTimestamp: ts }), { 'Content-Type': 'application/json' });
             }
+            if (data && typeof data.endTimestamp === 'number' && data.endTimestamp > Date.now()) {
+              writeCountdownToDisk(data.endTimestamp);
+              return send(res, 200, JSON.stringify({ endTimestamp: data.endTimestamp }), { 'Content-Type': 'application/json' });
+            }
             const ts = ensureCountdown();
             return send(res, 200, JSON.stringify({ endTimestamp: ts }), { 'Content-Type': 'application/json' });
           } catch (e) {
