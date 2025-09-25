@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin — Germanvault</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div class="admin-root admin-panel-card">
+    <h1>Admin-Steuerung</h1>
+    <section>
+      <h3 class="admin-section-title">Aktueller Countdown</h3>
+      <div id="current-end" class="admin-note">Lade…</div>
+      <div class="admin-row">
+        <input id="admin-end-datetime" type="datetime-local" class="admin-input" />
+        <button id="admin-set-end" class="admin-button">Setzen</button>
+      </div>
+      <div class="admin-row">
+        <input id="admin-hours" type="number" min="0" placeholder="Stunden" class="admin-input admin-number" />
+        <input id="admin-mins" type="number" min="0" max="59" placeholder="Minuten" class="admin-input admin-number" />
+        <button id="admin-set-duration" class="admin-button">Anwenden</button>
+      </div>
+      <div class="admin-row">
+        <button id="admin-reset" class="admin-button">Auf 12 Stunden zurücksetzen</button>
+        <button id="admin-refresh" class="admin-button admin-cancel-button">Aktualisieren</button>
+      </div>
+    </section>
+    <section style="margin-top:18px;">
+      <h3 class="admin-section-title">Hinweis</h3>
+      <div class="admin-note">Diese Seite ist nur sichtbar mit einem geheimen Schlüssel. Teilen Sie den Schlüssel nicht. Wenn Sie den Schlüssel ändern möchten, setzen Sie die Umgebungsvariable ADMIN_KEY und starten Sie den Server neu.</div>
+    </section>
+  </div>
+
+  <script src="/admin/admin.js"></script>
+</body>
+</html>
